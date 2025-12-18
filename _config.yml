@@ -10,7 +10,7 @@ baseurl: "" # Leave empty if using username.github.io
 social:
   github: haibol2016  # GitHub username (without @)
   twitter: seawave722677 # Twitter username (without @)
-  linkedin: https://www.linkedin.com/in/haibo-liu-a4559b69 # LinkedIn profile URL (full profile path)
+  linkedin: haibo-liu-a4559b69 # LinkedIn profile URL (full profile path)
   email: haibol2017@gmail.com # Email address
 
 # Build settings
