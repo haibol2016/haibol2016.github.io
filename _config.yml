@@ -1,17 +1,17 @@
 # Site settings
 title: "Bioinformatics & Data Science Blog"
 description: "Exploring bioinformatics, data science, and computational biology"
-author: "Your Name"
-email: "your.email@example.com"
-url: "https://yourusername.github.io" # Update with your GitHub username
+author: "Haibo Liu"
+email: "haibol2017@gmail.com"
+url: "https://haiboliu2016.github.io" # Update with your GitHub username
 baseurl: "" # Leave empty if using username.github.io
 
 # Social media links (update with your accounts)
 social:
-  github: yourusername  # GitHub username (without @)
+  github: haiboliu2016  # GitHub username (without @)
   twitter: yourusername # Twitter username (without @)
-  linkedin: yourusername # LinkedIn username (full profile path)
-  email: your.email@example.com # Email address
+  linkedin: Haibo Liu # LinkedIn username (full profile path)
+  email: haibol2017@gmail.com # Email address
 
 # Build settings
 markdown: kramdown
