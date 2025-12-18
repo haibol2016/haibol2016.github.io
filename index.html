@@ -1,0 +1,43 @@
+---
+layout: default
+title: Home
+---
+
+<div class="home">
+  <div class="intro">
+    <h1 class="page-heading">{{ site.title }}</h1>
+    <p class="page-description">{{ site.description }}</p>
+  </div>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">
+          {{ post.date | date: "%b %-d, %Y" }}
+          {%- assign words = post.content | number_of_words -%}
+          {%- if words < 360 -%}
+            <span class="reading-time"> • 1 min read</span>
+          {%- else -%}
+            <span class="reading-time"> • {{ words | divided_by: 180 }} min read</span>
+          {%- endif -%}
+        </span>
+        <h2>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+        </h2>
+        {% if post.excerpt %}
+          <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 50 }}</p>
+        {% endif %}
+        {% if post.tags %}
+          <div class="post-tags">
+            {% for tag in post.tags %}
+              <span class="tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+</div>
+

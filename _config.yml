@@ -1,0 +1,52 @@
+# Site settings
+title: "Bioinformatics & Data Science Blog"
+description: "Exploring bioinformatics, data science, and computational biology"
+author: "Your Name"
+email: "your.email@example.com"
+url: "https://yourusername.github.io" # Update with your GitHub username
+baseurl: "" # Leave empty if using username.github.io
+
+# Social media links (update with your accounts)
+social:
+  github: yourusername  # GitHub username (without @)
+  twitter: yourusername # Twitter username (without @)
+  linkedin: yourusername # LinkedIn username (full profile path)
+  email: your.email@example.com # Email address
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Theme settings
+# theme: minima  # Commented out - using custom layouts instead
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Kramdown settings
+kramdown:
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /:categories/:year/:month/:day/:title/
+
+# Pagination (requires jekyll-paginate gem - commented out for now)
+# paginate: 10
+# paginate_path: "/page:num/"
+

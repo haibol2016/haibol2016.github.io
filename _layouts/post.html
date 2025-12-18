@@ -1,0 +1,65 @@
+---
+layout: default
+---
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+        {{ page.date | date: date_format }}
+      </time>
+      {%- if page.author -%}
+        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
+      {%- endif -%}
+      {%- assign words = page.content | number_of_words -%}
+      {%- if words < 360 -%}
+        <span class="reading-time"> • 1 min read</span>
+      {%- else -%}
+        <span class="reading-time"> • {{ words | divided_by: 180 }} min read</span>
+      {%- endif -%}
+      {%- if page.tags -%}
+        <div class="post-tags">
+          {% for tag in page.tags %}
+            <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {%- endif -%}
+    </p>
+  </header>
+
+  {%- if page.toc -%}
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    {% include toc.html html=content %}
+  </div>
+  {%- endif -%}
+
+  <div class="post-content e-content" itemprop="articleBody">
+    {{ content }}
+  </div>
+
+  {%- if page.categories -%}
+    {%- assign related_posts = site.posts | where_exp:"post", "post.url != page.url" | where_exp:"post", "post.categories contains page.categories[0]" | limit: 3 -%}
+    {%- if related_posts.size > 0 -%}
+    <div class="related-posts">
+      <h3>Related Posts</h3>
+      <ul>
+        {%- for post in related_posts -%}
+        <li>
+          <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+        </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if site.disqus.shortname -%}
+    {%- include disqus_comments.html -%}
+  {%- endif -%}
+
+  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+</article>

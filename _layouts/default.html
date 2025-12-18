@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- SEO tags would go here if jekyll-seo-tag plugin is installed -->
+    <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | relative_url }}">
+    
+    <!-- MathJax for equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Syntax highlighting with better theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-r.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-groovy.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="{{ "/" | relative_url }}">{{ site.title | escape }}</a></h1>
+        <p class="subtitle">{{ site.description }}</p>
+        
+        {% if site.social %}
+        <div class="social-links">
+          {% if site.social.github %}
+          <a href="https://github.com/{{ site.social.github }}" title="GitHub" aria-label="GitHub">📦</a>
+          {% endif %}
+          {% if site.social.twitter %}
+          <a href="https://twitter.com/{{ site.social.twitter }}" title="Twitter" aria-label="Twitter">🐦</a>
+          {% endif %}
+          {% if site.social.linkedin %}
+          <a href="https://linkedin.com/in/{{ site.social.linkedin }}" title="LinkedIn" aria-label="LinkedIn">💼</a>
+          {% endif %}
+          {% if site.social.email %}
+          <a href="mailto:{{ site.social.email }}" title="Email" aria-label="Email">✉️</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </header>
+      
+      <nav>
+        <ul>
+          <li><a href="{{ "/" | relative_url }}" {% if page.url == "/" %}class="active"{% endif %}>Home</a></li>
+          <li><a href="{{ "/about" | relative_url }}" {% if page.url == "/about/" %}class="active"{% endif %}>About</a></li>
+          <li><a href="{{ "/archive" | relative_url }}" {% if page.url == "/archive/" %}class="active"{% endif %}>Archive</a></li>
+          <li><a href="{{ "/feed.xml" | relative_url }}">RSS</a></li>
+        </ul>
+      </nav>
+      
+      <section>
+
+      {{ content }}
+
+      </section>
+      <footer>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+  </body>
+</html>
+
