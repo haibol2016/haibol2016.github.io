@@ -3,14 +3,14 @@ title: "Bioinformatics & Data Science Blog"
 description: "Exploring bioinformatics, data science, and computational biology"
 author: "Haibo Liu"
 email: "haibol2017@gmail.com"
-url: "https://haiboliu2016.github.io" # Update with your GitHub username
+url: "https://github.com/haibol2016" # Update with your GitHub username
 baseurl: "" # Leave empty if using username.github.io
 
 # Social media links (update with your accounts)
 social:
   github: haibol2016  # GitHub username (without @)
-  twitter: yourusername # Twitter username (without @)
-  linkedin: haibo-liu-a4559b69 # LinkedIn username (full profile path)
+  twitter: seawave722677 # Twitter username (without @)
+  linkedin: https://www.linkedin.com/in/haibo-liu-a4559b69 # LinkedIn profile URL (full profile path)
   email: haibol2017@gmail.com # Email address
 
 # Build settings
