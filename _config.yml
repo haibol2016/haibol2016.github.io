@@ -8,9 +8,9 @@ baseurl: "" # Leave empty if using username.github.io
 
 # Social media links (update with your accounts)
 social:
-  github: haiboliu2016  # GitHub username (without @)
+  github: haibol2016  # GitHub username (without @)
   twitter: yourusername # Twitter username (without @)
-  linkedin: Haibo Liu # LinkedIn username (full profile path)
+  linkedin: haibo-liu-a4559b69 # LinkedIn username (full profile path)
   email: haibol2017@gmail.com # Email address
 
 # Build settings
