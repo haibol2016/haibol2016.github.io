@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "Understanding Nextflow Process Definition: A Comprehensive Guide"
-date: 2024-12-17
+date: 2025-12-17
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, bioinformatics, computational-biology, workflows, pipelines]
-author: Your Name
+author: Haibo Liu, PhD
 toc: true
 ---
 
@@ -159,11 +159,17 @@ When a process runs:
 
 Understanding process definitions is crucial for writing effective Nextflow workflows. Each component serves a specific purpose in making your pipeline reproducible, scalable, and maintainable.
 
-In future posts, we'll explore:
+In future posts, we'll explore best practices of:
 - Channel factories and operators
+- Modules composition
+- nf-test test composition
+- Subworkflow composition
 - Workflow composition
 - Advanced Nextflow patterns
-- Performance optimization
+- Conda/mamba environment and containers
+- Nextflow configuration
+- Groovy reference for Nextflow workflow development
+
 
 Happy workflow building! 🧬
 
