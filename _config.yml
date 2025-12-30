@@ -16,6 +16,7 @@ social:
 # Build settings
 markdown: kramdown
 highlighter: rouge
+future: true  # Show posts with future dates
 plugins:
   - jekyll-feed
   - jekyll-sitemap
