@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Conda Environment and Container Management Best Practices for Nextflow"
-date: 2025-12-22
+date: 2025-12-22 10:00:00 -0500
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, containers, conda, docker, singularity, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD

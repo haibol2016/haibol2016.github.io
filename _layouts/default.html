@@ -15,62 +15,6 @@
     
     <!-- Syntax highlighting with light theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
-    <style>
-      /* Override Prism.js to ensure white backgrounds */
-      .post-content pre,
-      .post-content pre[class*="language-"],
-      pre[class*="language-"] {
-        background: #fff !important;
-        color: #333 !important;
-        border: 1px solid #e1e4e8 !important;
-      }
-      .post-content pre code,
-      .post-content pre[class*="language-"] code,
-      pre[class*="language-"] code {
-        background: transparent !important;
-        color: #333 !important;
-      }
-      /* Style line numbers from Rouge/Kramdown */
-      .post-content .highlight table,
-      .post-content pre table {
-        width: 100%;
-        border-collapse: collapse;
-        display: table;
-        table-layout: fixed;
-      }
-      .post-content .highlight td,
-      .post-content pre td {
-        display: table-cell;
-        vertical-align: top;
-      }
-      .post-content .highlight td.lineno,
-      .post-content pre td.lineno {
-        width: 3em;
-        min-width: 3em;
-        max-width: 3em;
-        padding: 0 8px 0 16px;
-        text-align: right;
-        color: #999;
-        background: #fafafa;
-        user-select: none;
-        border-right: 1px solid #e1e4e8;
-        white-space: nowrap;
-      }
-      .post-content .highlight td.code,
-      .post-content pre td.code {
-        width: auto;
-        padding: 0 16px;
-        overflow-x: auto;
-        background: #fff;
-      }
-      .post-content .highlight pre,
-      .post-content pre pre {
-        margin: 0;
-        padding: 16px 0;
-        background: transparent;
-        border: none;
-      }
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>

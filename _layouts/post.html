@@ -19,6 +19,7 @@ layout: default
       {%- else -%}
         <span class="reading-time"> • {{ words | divided_by: 180 }} min read</span>
       {%- endif -%}
+      • <span class="current-time" data-timezone="{{ site.timezone | default: 'America/New_York' }}">Loading time...</span>
       {%- if page.tags -%}
         <div class="post-tags">
           {% for tag in page.tags %}
@@ -63,3 +64,48 @@ layout: default
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
+
+<script>
+(function() {
+  function updateCurrentTime() {
+    const timeElement = document.querySelector('.current-time');
+    if (!timeElement) return;
+    
+    const timezone = timeElement.getAttribute('data-timezone') || 'America/New_York';
+    const now = new Date();
+    
+    // Format time in the specified timezone
+    const options = {
+      timeZone: timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(now);
+    
+    // Extract parts
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    const hour = parts.find(p => p.type === 'hour').value;
+    const minute = parts.find(p => p.type === 'minute').value;
+    const second = parts.find(p => p.type === 'second').value;
+    
+    // Format as YYYY-MM-DD HH:MM:SS
+    const formatted = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    timeElement.textContent = formatted;
+  }
+  
+  // Update immediately
+  updateCurrentTime();
+  
+  // Update every second
+  setInterval(updateCurrentTime, 1000);
+})();
+</script>

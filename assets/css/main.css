@@ -260,6 +260,7 @@ a:hover {
   font-size: 85%;
   line-height: 1.45;
   background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
   border-radius: 3px;
   margin: 16px 0;
 }
@@ -282,6 +283,10 @@ a:hover {
    ============================================ */
 .post-content .highlight {
   margin-bottom: 16px;
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .post-content .highlight pre {
@@ -295,6 +300,7 @@ a:hover {
   margin: 0;
   display: table;
   table-layout: fixed;
+  background-color: #f6f8fa;
 }
 
 .post-content .highlight tbody {
@@ -313,25 +319,27 @@ a:hover {
 }
 
 .post-content .highlight td.lineno {
-  width: 1%;
+  width: 50px;
   min-width: 50px;
-  padding: 0 10px 0 0;
+  max-width: 50px;
+  padding: 16px 8px 16px 16px;
   text-align: right;
   color: #6a737d;
-  background-color: transparent;
+  background-color: #f6f8fa;
   user-select: none;
   -webkit-user-select: none;
   white-space: nowrap;
+  border-right: 1px solid #e1e4e8;
 }
 
 .post-content .highlight td.code {
-  width: 99%;
+  width: auto;
   padding: 16px;
   overflow-x: auto;
   background-color: #f6f8fa;
 }
 
-.post-content .highlight pre {
+.post-content .highlight td.code pre {
   margin: 0;
   padding: 0;
   background: transparent;
@@ -339,6 +347,7 @@ a:hover {
   overflow-x: auto;
   font-size: 85%;
   line-height: 1.45;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 .post-content .highlight .lineno {
@@ -347,12 +356,13 @@ a:hover {
 }
 
 /* ============================================
-   Override Prism.js for white background
+   Override Prism.js for consistent styling
    ============================================ */
 .post-content pre[class*="language-"],
 .post-content code[class*="language-"] {
   background: #f6f8fa !important;
   color: #24292e !important;
+  border: 1px solid #e1e4e8 !important;
 }
 
 .post-content pre[class*="language-"] code[class*="language-"] {

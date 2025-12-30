@@ -5,6 +5,7 @@ author: "Haibo Liu"
 email: "haibol2017@gmail.com"
 url: "https://github.com/haibol2016" # Update with your GitHub username
 baseurl: "" # Leave empty if using username.github.io
+timezone: America/New_York  # Eastern Time (ET) - adjust to your timezone
 
 # Social media links (update with your accounts)
 social:
