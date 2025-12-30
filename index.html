@@ -10,49 +10,6 @@ title: Home
     <p class="page-subtitle">Worcester, MA | <a href="mailto:haibo.liu@umassmed.edu">haibo.liu@umassmed.edu</a> | <a href="tel:+15153573719">+1 (515) 357-3719</a></p>
   </div>
 
-  <section class="about-section">
-    <h2>About Me</h2>
-    <p>
-      Highly self-motivated and results-driven bioinformatics scientist with over 10 years of experience in developing software, analyzing and interpreting diverse complex biological data. Proven expertise in programming with R, Python, SQL, and other languages, with version control (Git/GitHub). Proven ability to work independently and as a reliable team player. A self-driven quick learner eager to learn and grow.
-    </p>
-  </section>
-
-  <section class="current-position">
-    <h2>Current Position</h2>
-    <h3>Senior Bioinformatician | UMass Chan Medical School, Worcester, MA</h3>
-    <p><em>June 2022 – Present</em></p>
-    <ul>
-      <li>Provide bioinformatics analysis and consultation to 10+ research labs, contributing to high-profile publications.</li>
-      <li>Developed <strong>CleanUpRNAseq</strong>, an R package for detecting and correcting gDNA contamination in RNA-seq data.</li>
-      <li>Co-maintainer of <strong>DoubletFinder</strong> (scRNA-seq doublet detection), a widely used R package.</li>
-      <li>Published first-authored book chapter: <em>Best practices for the ATAC-seq assay and its data analysis</em>.</li>
-    </ul>
-  </section>
-
-  <section class="skills">
-    <h2>Core Expertise</h2>
-    <div class="skills-grid">
-      <div class="skill-category">
-        <h3>Sequencing Data Analysis</h3>
-        <p>scRNA-seq, RNA-seq, scATAC-seq, ATAC-seq, ChIP-seq, WGS/WES, RRBS/WGBS, PacBio Iso-seq, Nanopore sequencing</p>
-      </div>
-      <div class="skill-category">
-        <h3>Programming & Tools</h3>
-        <p>R, Python, Perl, Awk, Bash, SQL, Java | Git/GitHub | Docker, Singularity | Conda/mamba</p>
-      </div>
-      <div class="skill-category">
-        <h3>Pipeline Development</h3>
-        <p>Nextflow | HPC clusters | Amazon Web Services (AWS)</p>
-      </div>
-      <div class="skill-category">
-        <h3>Data Science</h3>
-        <p>Machine Learning, Deep Learning | Statistical Analysis | Data Visualization | Experimental Design</p>
-      </div>
-    </div>
-  </section>
-
-  <hr style="border: none; border-top: 1px solid #e1e4e8; margin: 40px 0;">
-
   <section class="recent-posts">
     <h2>Recent Blog Posts</h2>
     <ul class="post-list">
@@ -61,7 +18,7 @@ title: Home
           <h3>
             <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
           </h3>
-          <p class="post-meta">Posted by {{ post.author | default: site.author }} on {{ post.date | date: "%B %-d, %Y" }}</p>
+          <p class="post-meta">{{ post.author | default: site.author }} {{ post.date | date: "%B %-d, %Y" }}</p>
           {% if post.excerpt %}
             <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 50 }}</p>
           {% endif %}
