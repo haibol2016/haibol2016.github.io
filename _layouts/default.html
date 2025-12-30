@@ -31,25 +31,44 @@
         color: #333 !important;
       }
       /* Style line numbers from Rouge/Kramdown */
-      .post-content pre table,
-      .post-content .highlight table {
+      .post-content .highlight table,
+      .post-content pre table {
         width: 100%;
         border-collapse: collapse;
+        display: table;
+        table-layout: fixed;
       }
-      .post-content pre td.lineno,
-      .post-content .highlight td.lineno {
+      .post-content .highlight td,
+      .post-content pre td {
+        display: table-cell;
+        vertical-align: top;
+      }
+      .post-content .highlight td.lineno,
+      .post-content pre td.lineno {
         width: 3em;
-        padding: 16px 8px 16px 16px;
+        min-width: 3em;
+        max-width: 3em;
+        padding: 0 8px 0 16px;
         text-align: right;
         color: #999;
         background: #fafafa;
         user-select: none;
         border-right: 1px solid #e1e4e8;
+        white-space: nowrap;
       }
-      .post-content pre td.code,
-      .post-content .highlight td.code {
-        padding: 16px;
+      .post-content .highlight td.code,
+      .post-content pre td.code {
+        width: auto;
+        padding: 0 16px;
         overflow-x: auto;
+        background: #fff;
+      }
+      .post-content .highlight pre,
+      .post-content pre pre {
+        margin: 0;
+        padding: 16px 0;
+        background: transparent;
+        border: none;
       }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>

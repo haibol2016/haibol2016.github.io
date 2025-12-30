@@ -18,7 +18,7 @@ body {
 }
 
 .wrapper {
-  max-width: 700px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
 }
@@ -289,40 +289,70 @@ pre[class*="language-"] code[class*="language-"] {
 }
 
 /* Style line numbers from Rouge/Kramdown */
-.post-content pre table,
-.post-content .highlight table {
+.post-content .highlight,
+.post-content pre {
+  margin: 25px 0;
+}
+
+.post-content .highlight table,
+.post-content pre table {
   width: 100%;
   border-collapse: collapse;
   margin: 0;
+  display: table;
+  table-layout: fixed;
 }
 
-.post-content pre td,
-.post-content .highlight td {
+.post-content .highlight tbody,
+.post-content pre tbody {
+  display: table-row-group;
+}
+
+.post-content .highlight tr,
+.post-content pre tr {
+  display: table-row;
+}
+
+.post-content .highlight td,
+.post-content pre td {
+  display: table-cell;
+  vertical-align: top;
   border: none !important;
   padding: 0;
-  vertical-align: top;
 }
 
-.post-content pre td.lineno,
-.post-content .highlight td.lineno {
+.post-content .highlight td.lineno,
+.post-content pre td.lineno {
   width: 3em;
-  padding: 16px 8px 16px 16px;
+  min-width: 3em;
+  max-width: 3em;
+  padding: 0 8px 0 16px;
   text-align: right;
   color: #999;
   background: #fafafa;
   user-select: none;
   -webkit-user-select: none;
   border-right: 1px solid #e1e4e8;
+  white-space: nowrap;
 }
 
-.post-content pre td.code,
-.post-content .highlight td.code {
+.post-content .highlight td.code,
+.post-content pre td.code {
   width: auto;
-  padding: 16px;
+  padding: 0 16px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.post-content .highlight pre,
+.post-content pre pre {
+  margin: 0;
+  padding: 16px 0;
+  background: transparent;
+  border: none;
   overflow-x: auto;
 }
 
-.post-content pre .lineno,
 .post-content .highlight .lineno {
   display: inline-block;
   color: #999;
