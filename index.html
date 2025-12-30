@@ -5,39 +5,123 @@ title: Home
 
 <div class="home">
   <div class="intro">
-    <h1 class="page-heading">{{ site.title }}</h1>
-    <p class="page-description">{{ site.description }}</p>
+    <h1 class="page-heading">Haibo Liu, PhD</h1>
+    <p class="page-description">Senior Bioinformatician | Bioinformatics & Computational Biology</p>
+    <p class="page-subtitle">Worcester, MA | <a href="mailto:haibo.liu@umassmed.edu">haibo.liu@umassmed.edu</a> | <a href="tel:+15153573719">+1 (515) 357-3719</a></p>
   </div>
 
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">
-          {{ post.date | date: "%b %-d, %Y" }}
-          {%- assign words = post.content | number_of_words -%}
-          {%- if words < 360 -%}
-            <span class="reading-time"> • 1 min read</span>
-          {%- else -%}
-            <span class="reading-time"> • {{ words | divided_by: 180 }} min read</span>
-          {%- endif -%}
-        </span>
-        <h2>
-          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-        </h2>
-        {% if post.excerpt %}
-          <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 50 }}</p>
-        {% endif %}
-        {% if post.tags %}
-          <div class="post-tags">
-            {% for tag in post.tags %}
-              <span class="tag">{{ tag }}</span>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+  <section class="about-section">
+    <h2>About Me</h2>
+    <p>
+      Highly self-motivated and results-driven bioinformatics scientist with over 10 years of experience in developing software, analyzing and interpreting diverse complex biological data. Proven expertise in programming with R, Python, SQL, and other languages, with version control (Git/GitHub). Proven ability to work independently and as a reliable team player. A self-driven quick learner eager to learn and grow.
+    </p>
+  </section>
+
+  <section class="current-position">
+    <h2>Current Position</h2>
+    <h3>Senior Bioinformatician | UMass Chan Medical School, Worcester, MA</h3>
+    <p><em>June 2022 – Present</em></p>
+    <ul>
+      <li>Provide bioinformatics analysis and consultation to 10+ research labs by integrating cutting-edge algorithms and conducting in-depth data reviews, enhancing experimental design and data interpretation.</li>
+      <li>Analyze diverse next-generation sequencing datasets by applying advanced bioinformatics techniques and collaborating with diverse teams, contributing to significant findings in high-profile publications.</li>
+      <li>Developed <strong>CleanUpRNAseq</strong>, an R package for efficiently detecting and correcting gDNA contamination in RNA-seq data.</li>
+      <li>Optimized and debugged third-party R packages, including MACC (MNase-seq analysis) and <strong>DoubletFinder</strong> (scRNA-seq doublet detection); now a co-maintainer of the widely used DoubletFinder package.</li>
+      <li>Published a first-authored book chapter: <em>Best practices for the ATAC-seq assay and its data analysis</em>.</li>
+      <li>Developing an end-to-end Nextflow pipeline for streamlined scRNA-seq data analysis.</li>
+    </ul>
+  </section>
+
+  <section class="skills">
+    <h2>Core Expertise</h2>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h3>Sequencing Data Analysis</h3>
+        <p>scRNA-seq, RNA-seq, scATAC-seq, ATAC-seq, ChIP-seq, WGS/WES, RRBS/WGBS, PacBio Iso-seq, Nanopore sequencing</p>
+      </div>
+      <div class="skill-category">
+        <h3>Programming & Tools</h3>
+        <p>R, Python, Perl, Awk, Bash, SQL, Java | Git/GitHub | Docker, Singularity | Conda/mamba</p>
+      </div>
+      <div class="skill-category">
+        <h3>Pipeline Development</h3>
+        <p>Nextflow, Snakemake | HPC clusters | Amazon Web Services (AWS)</p>
+      </div>
+      <div class="skill-category">
+        <h3>Data Science</h3>
+        <p>Machine Learning, Deep Learning | Statistical Analysis | Data Visualization | Experimental Design</p>
+      </div>
+      <div class="skill-category">
+        <h3>Multi-omics</h3>
+        <p>Spatial transcriptomics, Microbiomics, Metabolomics, Proteomics</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="education">
+    <h2>Education</h2>
+    <ul>
+      <li><strong>Ph.D. in Bioinformatics & Computational Biology</strong>, Iowa State University, Ames, IA (August 2012 – March 2017)<br>
+      <em>Honor: Research Excellence Award</em></li>
+      <li><strong>Master of Science (M.S) in Biochemistry & Molecular Biology</strong>, Huazhong Agricultural University, Wuhan, CN (September 1998 – June 2001)</li>
+      <li><strong>Bachelor of Science (B.S) in Biotechnology</strong>, Huazhong Agricultural University, Wuhan, CN (September 1995 – June 1999)</li>
+    </ul>
+  </section>
+
+  <section class="highlights">
+    <h2>Key Achievements</h2>
+    <ul>
+      <li>Rescued an RNA-seq project by identifying genomic DNA (gDNA) contamination and recommending thorough DNase treatment, contributing to a high-profile publication.</li>
+      <li>Secured over $1.65M in USDA grants as PI/Co-PI and provided expert consultation on experimental design.</li>
+      <li>Led a hands-on training workshop on animal genome analysis as head instructor in San Diego.</li>
+      <li>Saved over $100K in sequencing costs by rescuing an RNA-seq project through timely recommendations on proper library construction.</li>
+      <li>Led integrative analysis of Illumina RNA-seq and PacBio Iso-Seq data to improve structural annotation of the latest pig reference genome (Sscrofa11.1).</li>
+      <li>Most viewed presentation at BioC2020: <a href="https://www.youtube.com/watch?v=VZFUu_cJxyI" target="_blank">"Best practices for ATAC-seq QC and data analysis"</a></li>
+    </ul>
+  </section>
+
+  <section class="publications">
+    <h2>Publications & Resources</h2>
+    <ul>
+      <li><strong>Google Scholar:</strong> <a href="https://scholar.google.com/citations?user=HCO7A3sAAAAJ&hl=en" target="_blank">View Profile</a></li>
+      <li><strong>GitHub:</strong> <a href="https://github.com/haibol2016" target="_blank">@haibol2016</a></li>
+      <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/haibo-liu-a4559b69" target="_blank">haibo-liu-a4559b69</a></li>
+    </ul>
+  </section>
+
+  <section class="certifications">
+    <h2>Certifications</h2>
+    <ul>
+      <li>Machine Learning (Coursera, Stanford University, by Andrew Ng)</li>
+      <li>Data Science with Python (Coursera, IBM)</li>
+      <li>Data Science in Python (Coursera, University of Michigan)</li>
+    </ul>
+  </section>
+
+  <section class="recent-posts">
+    <h2>Recent Blog Posts</h2>
+    <ul class="post-list">
+      {% for post in site.posts limit:5 %}
+        <li>
+          <span class="post-meta">
+            {{ post.date | date: "%b %-d, %Y" }}
+            {%- assign words = post.content | number_of_words -%}
+            {%- if words < 360 -%}
+              <span class="reading-time"> • 1 min read</span>
+            {%- else -%}
+              <span class="reading-time"> • {{ words | divided_by: 180 }} min read</span>
+            {%- endif -%}
+          </span>
+          <h3>
+            <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          </h3>
+          {% if post.excerpt %}
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    <p><a href="{{ "/archive" | relative_url }}">View all posts →</a></p>
+  </section>
 
   <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
 </div>
-
