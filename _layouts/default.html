@@ -32,16 +32,16 @@
         {% if site.social %}
         <div class="social-links">
           {% if site.social.github %}
-          <a href="https://github.com/{{ site.social.github }}" title="GitHub" aria-label="GitHub">📦</a>
+          <a href="https://github.com/{{ site.social.github }}" title="GitHub" aria-label="GitHub">GitHub</a>
           {% endif %}
           {% if site.social.twitter %}
-          <a href="https://twitter.com/{{ site.social.twitter }}" title="Twitter" aria-label="Twitter">🐦</a>
+          <a href="https://twitter.com/{{ site.social.twitter }}" title="Twitter" aria-label="Twitter">Twitter</a>
           {% endif %}
           {% if site.social.linkedin %}
-          <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" title="LinkedIn" aria-label="LinkedIn">💼</a>
+          <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" title="LinkedIn" aria-label="LinkedIn">LinkedIn</a>
           {% endif %}
           {% if site.social.email %}
-          <a href="mailto:{{ site.social.email }}" title="Email" aria-label="Email">✉️</a>
+          <a href="mailto:{{ site.social.email }}" title="Email" aria-label="Email">Email</a>
           {% endif %}
         </div>
         {% endif %}
@@ -52,7 +52,6 @@
           <li><a href="{{ "/" | relative_url }}" {% if page.url == "/" %}class="active"{% endif %}>Home</a></li>
           <li><a href="{{ "/about" | relative_url }}" {% if page.url == "/about/" %}class="active"{% endif %}>About</a></li>
           <li><a href="{{ "/archive" | relative_url }}" {% if page.url == "/archive/" %}class="active"{% endif %}>Archive</a></li>
-          <li><a href="{{ "/feed.xml" | relative_url }}">RSS</a></li>
         </ul>
       </nav>
       

@@ -5,7 +5,7 @@ title: Archive
 
 # Archive
 
-All posts organized by year and month.
+All posts organized by year.
 
 {% if site.posts.size > 0 %}
   {% assign date = "" %}
@@ -18,9 +18,9 @@ All posts organized by year and month.
         <ul class="archive-posts">
       {% assign date = currentdate %}
     {% endif %}
-          <li>
-            <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-            <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          <li class="archive-item">
+            <span class="archive-date">{{ post.date | date: "%b %-d" }}</span>
+            <a class="archive-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
           </li>
     {% if forloop.last %}</ul></div>{% endif %}
   {% endfor %}
