@@ -5,6 +5,7 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, groovy, programming, bioinformatics, workflows, reference]
 author: Haibo Liu, PhD
+toc: true
 ---
 
 

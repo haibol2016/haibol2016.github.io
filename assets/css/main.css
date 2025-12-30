@@ -241,16 +241,17 @@ a:hover {
 }
 
 .post-content code {
-  background-color: #f6f8fa;
+  background-color: #fff;
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 0.9em;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   color: #e83e8c;
+  border: 1px solid #e1e4e8;
 }
 
 .post-content pre {
-  background: #f6f8fa;
+  background: #fff;
   border: 1px solid #e1e4e8;
   border-radius: 3px;
   padding: 16px;
@@ -265,6 +266,18 @@ a:hover {
   color: #333;
   border: none;
   font-size: 0.95em;
+}
+
+/* Override Prism.js dark theme with white background */
+.post-content pre[class*="language-"],
+.post-content code[class*="language-"] {
+  background: #fff !important;
+  color: #333 !important;
+}
+
+.post-content pre[class*="language-"] code[class*="language-"] {
+  background: transparent !important;
+  color: #333 !important;
 }
 
 .post-content blockquote {

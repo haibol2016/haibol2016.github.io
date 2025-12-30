@@ -5,6 +5,7 @@ date: 2025-11-15
 categories: [bioinformatics, data-science]
 tags: [introduction, bioinformatics, data-science]
 author: Haibo Liu, PhD
+toc: true
 ---
 
 Welcome to my blog about bioinformatics and data science! This is a sample post to get you started.

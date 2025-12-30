@@ -5,6 +5,7 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, configuration, testing, bioinformatics, workflows, best-practices, hpc, aws]
 author: Haibo Liu, PhD
+toc: true
 ---
 
 

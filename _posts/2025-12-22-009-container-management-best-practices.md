@@ -5,6 +5,7 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, containers, conda, docker, singularity, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
+toc: true
 ---
 
 

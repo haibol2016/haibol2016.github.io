@@ -5,6 +5,7 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, channels, bioinformatics, workflows, pipelines, reference]
 author: Haibo Liu, PhD
+toc: true
 ---
 
 
