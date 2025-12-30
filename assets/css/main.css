@@ -268,16 +268,114 @@ a:hover {
   font-size: 0.95em;
 }
 
-/* Override Prism.js dark theme with white background */
+/* Override Prism.js theme with white background - must be after Prism CSS */
+.post-content pre,
 .post-content pre[class*="language-"],
-.post-content code[class*="language-"] {
+.post-content code[class*="language-"],
+pre[class*="language-"],
+code[class*="language-"] {
   background: #fff !important;
+  color: #333 !important;
+  border: 1px solid #e1e4e8 !important;
+}
+
+.post-content pre code,
+.post-content pre[class*="language-"] code,
+.post-content pre[class*="language-"] code[class*="language-"],
+pre[class*="language-"] code[class*="language-"] {
+  background: transparent !important;
+  color: #333 !important;
+  border: none !important;
+}
+
+/* Style line numbers from Rouge/Kramdown */
+.post-content pre table,
+.post-content .highlight table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.post-content pre td,
+.post-content .highlight td {
+  border: none !important;
+  padding: 0;
+  vertical-align: top;
+}
+
+.post-content pre td.lineno,
+.post-content .highlight td.lineno {
+  width: 3em;
+  padding: 16px 8px 16px 16px;
+  text-align: right;
+  color: #999;
+  background: #fafafa;
+  user-select: none;
+  -webkit-user-select: none;
+  border-right: 1px solid #e1e4e8;
+}
+
+.post-content pre td.code,
+.post-content .highlight td.code {
+  width: auto;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.post-content pre .lineno,
+.post-content .highlight .lineno {
+  display: inline-block;
+  color: #999;
+}
+
+/* Override Prism token colors for light theme */
+.post-content .token.comment,
+.post-content .token.prolog,
+.post-content .token.doctype,
+.post-content .token.cdata {
+  color: #6a737d !important;
+}
+
+.post-content .token.punctuation {
   color: #333 !important;
 }
 
-.post-content pre[class*="language-"] code[class*="language-"] {
-  background: transparent !important;
-  color: #333 !important;
+.post-content .token.property,
+.post-content .token.tag,
+.post-content .token.boolean,
+.post-content .token.number,
+.post-content .token.constant,
+.post-content .token.symbol,
+.post-content .token.deleted {
+  color: #005cc5 !important;
+}
+
+.post-content .token.selector,
+.post-content .token.attr-name,
+.post-content .token.string,
+.post-content .token.char,
+.post-content .token.builtin,
+.post-content .token.inserted {
+  color: #032f62 !important;
+}
+
+.post-content .token.operator,
+.post-content .token.entity,
+.post-content .token.url,
+.post-content .language-css .token.string,
+.post-content .style .token.string {
+  color: #d73a49 !important;
+}
+
+.post-content .token.atrule,
+.post-content .token.attr-value,
+.post-content .token.keyword {
+  color: #d73a49 !important;
+}
+
+.post-content .token.function,
+.post-content .token.class-name {
+  color: #6f42c1 !important;
 }
 
 .post-content blockquote {
