@@ -5,29 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, main.nf, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Writing Module `main.nf` Files
 
 This document outlines best practices for writing Nextflow module `main.nf` files, with special focus on handling tools with many configurable parameters.
 
-## Table of Contents
-
-1. [Module Structure](#module-structure)
-2. [Handling Many Parameters](#handling-many-parameters)
-3. [Input/Output Definitions](#inputoutput-definitions)
-4. [Script Implementation](#script-implementation)
-5. [Template Scripts for Complex Tools](#template-scripts-for-complex-tools)
-6. [Conditional Logic](#conditional-logic)
-7. [Version Tracking](#version-tracking)
-8. [Stub Implementation](#stub-implementation)
-9. [Error Handling and Validation](#error-handling-and-validation)
-10. [Resource Management](#resource-management)
-11. [Documentation](#documentation)
-12. [Example Templates](#example-templates)
-
----
 
 ## Module Structure
 

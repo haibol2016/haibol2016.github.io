@@ -5,29 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, bioinformatics, workflows, best-practices, development]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Developing Nextflow Modules
 
 This document outlines best practices for developing Nextflow modules, covering the complete module development lifecycle from initial design to testing and maintenance.
 
-## Table of Contents
-
-1. [Module Structure and Organization](#module-structure-and-organization)
-2. [Required Files](#required-files)
-3. [Naming Conventions](#naming-conventions)
-4. [Process Definition](#process-definition)
-5. [Input/Output Design](#inputoutput-design)
-6. [Container and Environment Setup](#container-and-environment-setup)
-7. [Testing](#testing)
-8. [Documentation](#documentation)
-9. [Versioning and Updates](#versioning-and-updates)
-10. [Common Pitfalls](#common-pitfalls)
-11. [Module Development Workflow](#module-development-workflow)
-12. [Example: Complete Module](#example-complete-module)
-
----
 
 ## Module Structure and Organization
 

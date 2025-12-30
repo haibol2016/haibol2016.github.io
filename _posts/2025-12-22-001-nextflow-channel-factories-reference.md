@@ -5,22 +5,10 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, channels, bioinformatics, workflows, pipelines, reference]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Nextflow Channel Factories Reference Guide
 
 This document provides a comprehensive reference guide to Nextflow channel factories with detailed examples and use cases.
-
-## Table of Contents
-
-1. [Introduction to Channel Factories](#introduction-to-channel-factories)
-2. [Basic Channel Factories](#basic-channel-factories)
-3. [File-Based Channel Factories](#file-based-channel-factories)
-4. [Data Structure Channel Factories](#data-structure-channel-factories)
-5. [Channel Operators](#channel-operators)
-6. [Common Patterns and Use Cases](#common-patterns-and-use-cases)
-7. [Best Practices](#best-practices)
 
 ---
 

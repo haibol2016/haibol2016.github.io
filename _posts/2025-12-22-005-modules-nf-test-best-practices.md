@@ -5,30 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, testing, nf-test, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Writing nf-test Test Files for Nextflow Modules
 
 This document outlines best practices for writing comprehensive nf-test test files for Nextflow modules, covering test structure, patterns, assertions, and configuration.
 
-## Table of Contents
-
-1. [Test File Structure](#test-file-structure)
-2. [Basic Test Structure](#basic-test-structure)
-3. [Test Naming Conventions](#test-naming-conventions)
-4. [Input Channel Setup](#input-channel-setup)
-5. [Assertions and Validation](#assertions-and-validation)
-6. [Snapshot Testing](#snapshot-testing)
-7. [Test Configuration Files](#test-configuration-files)
-8. [Test Scenarios](#test-scenarios)
-9. [Stub Testing](#stub-testing)
-10. [Setup Blocks for Dependencies](#setup-blocks-for-dependencies)
-11. [Advanced Patterns](#advanced-patterns)
-12. [Common Pitfalls](#common-pitfalls)
-13. [Complete Example](#complete-example)
-
----
 
 ## Test File Structure
 

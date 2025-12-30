@@ -5,26 +5,10 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, groovy, programming, bioinformatics, workflows, reference]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Groovy Reference for Nextflow Pipeline Development
 
 This guide provides essential Groovy syntax and examples specifically tailored for building sophisticated Nextflow pipelines. It focuses on the most commonly used Groovy features in Nextflow workflows.
-
-## Table of Contents
-
-1. [Basic Syntax](#basic-syntax)
-2. [Data Types and Variables](#data-types-and-variables)
-3. [Collections (Lists and Maps)](#collections-ranges-lists-and-maps)
-4. [Strings and String Interpolation](#strings-and-string-interpolation)
-5. [Closures](#closures)
-6. [Conditional Logic](#conditional-logic)
-7. [Loops and Iteration](#loops-and-iteration)
-8. [File Operations](#file-operations)
-9. [Regular Expressions](#regular-expressions)
-10. [Error Handling](#error-handling)
-11. [Common Patterns in Nextflow Workflows](#common-patterns-in-nextflow-workflows)
 
 ---
 

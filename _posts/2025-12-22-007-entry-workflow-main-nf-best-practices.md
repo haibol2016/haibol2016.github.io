@@ -5,33 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, workflows, main.nf, bioinformatics, pipelines, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Writing main.nf for Entry Workflows
 
 This document outlines best practices for writing the main workflow file (`main.nf`) for Nextflow pipelines. This is the entry point that users run and orchestrates all modules and subworkflows.
 
-## Table of Contents
-
-1. [File Structure and Organization](#file-structure-and-organization)
-2. [Header and Documentation](#header-and-documentation)
-3. [Module and Subworkflow Imports](#module-and-subworkflow-imports)
-4. [Function Imports](#function-imports)
-5. [Workflow Definition](#workflow-definition)
-6. [Input Channel Definitions](#2-input-channel-definitions-take)
-7. [Validation and Preprocessing](#validation-and-preprocessing)
-8. [Workflow Logic Organization](#workflow-logic-organization)
-9. [Channel Management](#channel-management)
-10. [Conditional Execution](#conditional-execution)
-11. [Version Collection](#version-collection)
-12. [Output Definitions](#output-definitions)
-13. [Workflow Output Publishing (Nextflow 25.10+)](#workflow-output-publishing-nextflow-2510)
-14. [Comments and Documentation](#comments-and-documentation)
-15. [Common Patterns](#common-patterns)
-16. [Complete Example](#complete-example)
-
----
 
 ## File Structure and Organization
 

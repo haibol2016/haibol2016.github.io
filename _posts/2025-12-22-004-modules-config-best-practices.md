@@ -5,28 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, configuration, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Writing `modules.config` Files
 
 This document outlines best practices for organizing and writing `conf/modules.config` files for Nextflow pipelines with many modules and complex conditional execution logic.
 
-## Table of Contents
-
-1. [File Structure and Organization](#file-structure-and-organization)
-2. [Section Organization](#section-organization)
-3. [Conditional Logic Patterns](#conditional-logic-patterns)
-4. [Module Grouping Strategies](#module-grouping-strategies)
-5. [Configuration Patterns](#configuration-patterns)
-6. [Naming Conventions](#naming-conventions)
-7. [Comments and Documentation](#comments-and-documentation)
-8. [Parameter Exposure](#parameter-exposure)
-9. [Testing and Validation](#testing-and-validation)
-10. [Common Pitfalls](#common-pitfalls)
-11. [Example Template](#example-template)
-
----
 
 ## File Structure and Organization
 

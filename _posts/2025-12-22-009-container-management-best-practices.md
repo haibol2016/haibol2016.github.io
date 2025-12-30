@@ -5,10 +5,8 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, containers, conda, docker, singularity, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Conda Environment and Container Management Best Practices for Nextflow
 
 ## Introduction
 
@@ -27,21 +25,6 @@ Nextflow seamlessly integrates with both approaches, allowing you to specify env
 
 This guide provides best practices for using conda/mamba environments and Docker/Singularity containers in Nextflow pipelines, including building cross-platform images.
 
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Conda/Mamba Environments](#condamamba-environments)
-3. [Docker Containers](#docker-containers)
-4. [Singularity Containers](#singularity-containers)
-5. [macOS ARM64 (Apple Silicon) Considerations](#macos-arm64-apple-silicon-considerations)
-6. [Using Customized Docker Images in Nextflow Modules](#using-customized-docker-images-in-nextflow-modules)
-7. [Building Cross-Platform Images](#building-cross-platform-images)
-8. [Container Configuration in Nextflow](#container-configuration-in-nextflow)
-9. [Checking Docker Image Availability](#checking-docker-image-availability)
-10. [Best Practices](#best-practices)
-11. [Troubleshooting](#troubleshooting)
-
----
 
 ## Overview
 

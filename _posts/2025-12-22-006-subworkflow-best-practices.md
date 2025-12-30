@@ -5,28 +5,11 @@ date: 2025-12-22
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, subworkflows, modules, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
-toc: true
 ---
 
-# Best Practices for Building Subworkflows from Multiple Modules
 
 This document outlines best practices for creating Nextflow subworkflows that combine multiple modules into reusable, composable workflow units.
 
-## Table of Contents
-
-1. [Subworkflow Structure](#subworkflow-structure)
-2. [Module Inclusion and Aliasing](#module-inclusion-and-aliasing)
-3. [Input/Output Definitions](#inputoutput-definitions)
-4. [Channel Management](#channel-management)
-5. [Conditional Logic](#conditional-logic)
-6. [Version Tracking](#version-tracking)
-7. [Helper Functions](#helper-functions)
-8. [Documentation](#documentation)
-9. [Testing](#testing)
-10. [Common Patterns](#common-patterns)
-11. [Example Templates](#example-templates)
-
----
 
 ## Subworkflow Structure
 

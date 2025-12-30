@@ -29,13 +29,6 @@ layout: default
     </p>
   </header>
 
-  {%- if page.toc -%}
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    {% include toc.html html=content %}
-  </div>
-  {%- endif -%}
-
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
