@@ -41,12 +41,6 @@ kramdown:
     block:
       line_numbers: true
 
-# Collections
-collections:
-  posts:
-    output: true
-    permalink: /:categories/:year/:month/:day/:title/
-
 # Pagination (requires jekyll-paginate gem - commented out for now)
 # paginate: 10
 # paginate_path: "/page:num/"
