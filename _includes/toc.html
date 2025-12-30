@@ -1,15 +1,10 @@
 {%- comment -%}
-  Simple table of contents generator
+  Simple table of contents generator - Only shows level 2 headers (h2)
   Usage: {% include toc.html html=content %}
 {%- endcomment -%}
 
 {%- assign html = include.html -%}
-{%- assign minHeader = include.h_min | default: 2 -%}
-{%- assign maxHeader = include.h_max | default: 3 -%}
 {%- assign nodes = html | split: '<h' -%}
-{%- assign firstHeader = true -%}
-{%- assign currLevel = 0 -%}
-{%- assign lastLevel = 0 -%}
 
 <ul>
 {%- for node in nodes -%}
@@ -19,14 +14,9 @@
   
   {%- assign headerLevel = node | replace: '"', '' | slice: 0, 1 | times: 1 -%}
   
-  {%- if headerLevel < minHeader or headerLevel > maxHeader -%}
+  {%- comment -%} Only process h2 headers (level 2) {%- endcomment -%}
+  {%- if headerLevel != 2 -%}
     {%- continue -%}
-  {%- endif -%}
-  
-  {%- if firstHeader -%}
-    {%- assign firstHeader = false -%}
-    {%- assign currLevel = headerLevel -%}
-    {%- assign lastLevel = headerLevel -%}
   {%- endif -%}
   
   {%- assign _workspace = node | split: '</h' -%}
@@ -45,28 +35,7 @@
   {%- assign _workspace = _workspace[0] | split: '>' -%}
   {%- assign html_title = _workspace | last | strip_html | strip -%}
   
-  {%- assign currLevel = headerLevel -%}
-  
-  {%- if currLevel > lastLevel -%}
-    {%- for i in (lastLevel..currLevel) -%}
-      {%- if i != currLevel -%}
-        <ul>
-      {%- endif -%}
-    {%- endfor -%}
-  {%- elsif currLevel < lastLevel -%}
-    {%- for i in (currLevel..lastLevel) -%}
-      {%- if i != currLevel -%}
-        </ul>
-      {%- endif -%}
-    {%- endfor -%}
-  {%- endif -%}
-  
   <li><a href="#{{ html_id }}">{{ html_title }}</a></li>
-  
-  {%- assign lastLevel = currLevel -%}
 {%- endfor -%}
-
-{%- for i in (1..lastLevel) -%}
-  </ul>
-{%- endfor -%}
+</ul>
 

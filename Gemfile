@@ -5,6 +5,11 @@ gem "jekyll-feed", "~> 0.15"
 gem "jekyll-sitemap", "~> 1.4"
 gem "kramdown-parser-gfm"
 
+# Required for Ruby 3.4+ (standard libraries moved to bundled gems)
+gem "base64"
+gem "bigdecimal"
+gem "logger"
+
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 # and associated library.
 platforms :mingw, :x64_mingw, :mswin, :jruby do

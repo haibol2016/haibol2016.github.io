@@ -1373,7 +1373,7 @@ docker buildx build --platform linux/amd64 -t tool:version .
 uname -m  # Should show "arm64" on Apple Silicon
 
 # Check Docker platform
-docker version --format '{{.Server.Arch}}'
+docker version --format '&#123;&#123;.Server.Arch&#125;&#125;'
 
 # Check image platform
 docker inspect image:tag | grep Architecture

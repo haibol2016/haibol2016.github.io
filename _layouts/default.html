@@ -15,6 +15,40 @@
     
     <!-- Syntax highlighting with light theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <style>
+      /* Force Rouge table layout to work correctly */
+      .highlight table.rouge-table,
+      table.rouge-table {
+        display: table !important;
+        width: 100% !important;
+        table-layout: fixed !important;
+      }
+      .highlight table.rouge-table tbody,
+      table.rouge-table tbody {
+        display: table-row-group !important;
+      }
+      .highlight table.rouge-table tr,
+      table.rouge-table tr {
+        display: table-row !important;
+      }
+      .highlight table.rouge-table td,
+      table.rouge-table td {
+        display: table-cell !important;
+        vertical-align: top !important;
+      }
+      .highlight table.rouge-table td.rouge-gutter,
+      table.rouge-table td.rouge-gutter {
+        display: table-cell !important;
+        width: 50px !important;
+        min-width: 50px !important;
+        max-width: 50px !important;
+      }
+      .highlight table.rouge-table td.rouge-code,
+      table.rouge-table td.rouge-code {
+        display: table-cell !important;
+        width: auto !important;
+      }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>

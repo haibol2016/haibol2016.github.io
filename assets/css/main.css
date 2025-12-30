@@ -289,36 +289,55 @@ a:hover {
   overflow: hidden;
 }
 
+/* Pre and code tags that wrap the table - must not break table layout */
+.post-content .highlight > pre,
+.post-content .highlight > pre > code {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
 .post-content .highlight pre {
   margin-bottom: 0;
   word-break: normal;
+  display: block;
 }
 
-.post-content .highlight table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0;
-  display: table;
-  table-layout: fixed;
+.post-content .highlight table,
+.post-content .highlight .rouge-table,
+.post-content table.rouge-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0 !important;
+  display: table !important;
+  table-layout: fixed !important;
   background-color: #f6f8fa;
 }
 
-.post-content .highlight tbody {
-  display: table-row-group;
+.post-content .highlight tbody,
+.post-content table.rouge-table tbody {
+  display: table-row-group !important;
 }
 
-.post-content .highlight tr {
-  display: table-row;
+.post-content .highlight tr,
+.post-content table.rouge-table tr {
+  display: table-row !important;
 }
 
-.post-content .highlight td {
-  display: table-cell;
-  vertical-align: top;
-  border: none;
-  padding: 0;
+.post-content .highlight td,
+.post-content table.rouge-table td {
+  display: table-cell !important;
+  vertical-align: top !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
-.post-content .highlight td.lineno {
+/* Rouge line number column (rouge-gutter) */
+.post-content .highlight td.lineno,
+.post-content .highlight td.rouge-gutter {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
@@ -330,16 +349,33 @@ a:hover {
   -webkit-user-select: none;
   white-space: nowrap;
   border-right: 1px solid #e1e4e8;
+  display: table-cell !important;
 }
 
-.post-content .highlight td.code {
+/* Pre tags inside line number cells */
+.post-content .highlight td.rouge-gutter pre,
+.post-content .highlight td.lineno pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  display: block;
+  font-size: 85%;
+  line-height: 1.45;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+/* Rouge code column (rouge-code) */
+.post-content .highlight td.code,
+.post-content .highlight td.rouge-code {
   width: auto;
   padding: 16px;
   overflow-x: auto;
   background-color: #f6f8fa;
 }
 
-.post-content .highlight td.code pre {
+.post-content .highlight td.code pre,
+.post-content .highlight td.rouge-code pre {
   margin: 0;
   padding: 0;
   background: transparent;
@@ -348,6 +384,7 @@ a:hover {
   font-size: 85%;
   line-height: 1.45;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  display: block;
 }
 
 .post-content .highlight .lineno {
@@ -473,7 +510,9 @@ a:hover {
 /* ============================================
    Tables
    ============================================ */
-.post-content table {
+/* Regular content tables (not code blocks) - exclude tables inside .highlight */
+.post-content > table:not(.rouge-table),
+.post-content :not(.highlight) > table {
   width: 100%;
   border-collapse: collapse;
   margin: 16px 0;
