@@ -128,9 +128,9 @@
       </header>
       {% endif %}
       
-      <section {% if page.url == "/archive/" %}class="archive-section"{% endif %}>
+      <section {% if page.url == "/archive/" or page.url == "/archive.html" or page.url contains "/archive" %}class="archive-section"{% endif %}>
 
-      {% if page.url == "/archive/" %}
+      {% if page.url == "/archive/" or page.url == "/archive.html" or page.url contains "/archive" %}
         <h1>Archive</h1>
         <p>All posts organized by year.</p>
         {% include archive_list.html %}
@@ -494,6 +494,16 @@
                 // Create a new div with the unescaped HTML
                 var newDiv = document.createElement('div');
                 newDiv.innerHTML = htmlContent;
+                
+                // Find the archive-section parent to ensure styles apply
+                var archiveSection = block.closest('.archive-section');
+                if (!archiveSection) {
+                  // Try to find section element
+                  var section = block.closest('section');
+                  if (section) {
+                    section.classList.add('archive-section');
+                  }
+                }
                 
                 // Find the parent to replace in (could be section or another container)
                 var parent = block.parentNode;

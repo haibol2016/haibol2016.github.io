@@ -445,19 +445,15 @@ a:hover {
 }
 
 /* Ensure archive lists are not affected by code block styles */
-.archive-posts,
-.archive-item,
-.archive-date,
-.archive-link {
+.archive-section .archive-posts,
+.archive-section .archive-item,
+.archive-section .archive-date,
+.archive-section .archive-link {
   /* Reset any code block styles that might leak */
   font-family: inherit !important;
   font-size: inherit !important;
   line-height: inherit !important;
   display: inherit !important;
-  background: transparent !important;
-  border: none !important;
-  padding: inherit !important;
-  margin: inherit !important;
 }
 
 /* Ensure blog post code block line numbers are always visible (highest priority) */
@@ -1054,40 +1050,102 @@ a:hover {
   font-weight: 600;
 }
 
+/* Archive page styles - apply to both archive-section and direct archive elements */
+.archive-section .archive-posts,
 .archive-posts {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+.archive-section .archive-item,
 .archive-item {
-  padding: 8px 0;
-  border-bottom: 1px solid #e1e4e8;
-  display: block;
-  line-height: 1.5;
+  padding: 6px 12px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #e1e4e8 !important;
+  display: block !important;
+  line-height: 1.4 !important;
+  transition: background-color 0.2s;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
+/* Alternate background colors for archive items */
+.archive-section .archive-item:nth-child(odd),
+.archive-item:nth-child(odd) {
+  background-color: #57b7d3 !important;
+}
+
+.archive-section .archive-item:nth-child(even),
+.archive-item:nth-child(even) {
+  background-color: white !important;
+}
+
+.archive-section .archive-item:hover,
+.archive-item:hover {
+  background-color: #4aa5c0 !important;
+}
+
+.archive-section .archive-item:last-child,
 .archive-item:last-child {
-  border-bottom: none;
+  border-bottom: 1px solid #e1e4e8 !important;
 }
 
+.archive-section .archive-date,
 .archive-date {
-  color: #586069;
-  font-size: 12px;
-  font-weight: 600;
-  margin-right: 4px;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin-right: 8px !important;
+  display: inline !important;
+  white-space: nowrap !important;
 }
 
+/* Date color for items with blue background (odd) */
+.archive-section .archive-item:nth-child(odd) .archive-date,
+.archive-item:nth-child(odd) .archive-date {
+  color: white !important;
+}
+
+/* Date color for items with white background (even) */
+.archive-section .archive-item:nth-child(even) .archive-date,
+.archive-item:nth-child(even) .archive-date {
+  color: #586069 !important;
+}
+
+.archive-section .archive-link,
 .archive-link {
-  color: #24292e;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 12px;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  display: inline !important;
+  white-space: nowrap !important;
 }
 
-.archive-link:hover {
-  color: #0366d6;
-  text-decoration: underline;
+/* Link color for items with blue background (odd) */
+.archive-section .archive-item:nth-child(odd) .archive-link,
+.archive-item:nth-child(odd) .archive-link {
+  color: white !important;
+}
+
+/* Link color for items with white background (even) */
+.archive-section .archive-item:nth-child(even) .archive-link,
+.archive-item:nth-child(even) .archive-link {
+  color: #24292e !important;
+}
+
+/* Hover styles for links on blue background */
+.archive-section .archive-item:nth-child(odd) .archive-link:hover,
+.archive-item:nth-child(odd) .archive-link:hover {
+  color: #e6f7ff !important;
+  text-decoration: underline !important;
+}
+
+/* Hover styles for links on white background */
+.archive-section .archive-item:nth-child(even) .archive-link:hover,
+.archive-item:nth-child(even) .archive-link:hover {
+  color: #0366d6 !important;
+  text-decoration: underline !important;
 }
 
 /* ============================================
@@ -1188,8 +1246,9 @@ footer a:hover {
   }
   
   .archive-item {
-    flex-direction: column;
-    gap: 4px;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .archive-date {
