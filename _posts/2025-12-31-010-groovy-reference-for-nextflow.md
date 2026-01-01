@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Groovy Reference for Nextflow Pipeline Development"
-date: 2025-12-22
+date: 2025-12-31
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, groovy, programming, bioinformatics, workflows, reference]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This guide provides essential Groovy syntax and examples specifically tailored for building sophisticated Nextflow pipelines. It focuses on the most commonly used Groovy features in Nextflow workflows.
 
 ---

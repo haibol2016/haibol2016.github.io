@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Writing nf-test Test Files for Nextflow Modules"
-date: 2025-12-22
+date: 2025-12-26
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, testing, nf-test, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for writing comprehensive nf-test test files for Nextflow modules, covering test structure, patterns, assertions, and configuration.
 
 

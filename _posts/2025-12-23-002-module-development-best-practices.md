@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Developing Nextflow Modules"
-date: 2025-12-22
+date: 2025-12-23
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, bioinformatics, workflows, best-practices, development]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for developing Nextflow modules, covering the complete module development lifecycle from initial design to testing and maintenance.
 
 

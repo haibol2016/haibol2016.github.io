@@ -7,7 +7,6 @@ tags: [introduction, bioinformatics, data-science]
 author: Haibo Liu, PhD
 toc: true
 ---
-
 Welcome to my blog about bioinformatics and data science!
 
 ## What You'll Find Here

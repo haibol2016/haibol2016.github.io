@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Writing main.nf for Entry Workflows"
-date: 2025-12-22
+date: 2025-12-28
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, workflows, main.nf, bioinformatics, pipelines, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for writing the main workflow file (`main.nf`) for Nextflow pipelines. This is the entry point that users run and orchestrates all modules and subworkflows.
 
 

@@ -7,7 +7,6 @@ tags: [nextflow, bioinformatics, computational-biology, workflows, pipelines]
 author: Haibo Liu, PhD
 toc: true
 ---
-
 Nextflow is a powerful workflow management system that makes it easy to write data-intensive computational pipelines. One of the core concepts in Nextflow is the **process definition**, which is the building block of any workflow. In this post, we'll break down the anatomy of a Nextflow process and understand each component.
 
 ## What is a Nextflow Process?

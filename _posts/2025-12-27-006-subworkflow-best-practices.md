@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Building Subworkflows from Multiple Modules"
-date: 2025-12-22
+date: 2025-12-27
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, subworkflows, modules, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for creating Nextflow subworkflows that combine multiple modules into reusable, composable workflow units.
 
 

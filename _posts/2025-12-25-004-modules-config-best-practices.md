@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Writing modules.config Files"
-date: 2025-12-22
+date: 2025-12-25
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, configuration, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for organizing and writing `conf/modules.config` files for Nextflow pipelines with many modules and complex conditional execution logic.
 
 

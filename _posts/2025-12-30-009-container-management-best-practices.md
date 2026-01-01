@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Conda Environment and Container Management Best Practices for Nextflow"
-date: 2025-12-22 10:00:00 -0500
+date: 2025-12-30
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, containers, conda, docker, singularity, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 ## Introduction
 
 Nextflow pipelines require specific software tools and dependencies to execute successfully. Managing these dependencies across different computing environments (development machines, HPC clusters, cloud platforms) can be challenging due to version conflicts, missing libraries, and platform-specific requirements. This is where **conda/mamba environments** and **containers** (Docker, Singularity, Podman) become essential.

@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Best Practices for Writing Module main.nf Files"
-date: 2025-12-22
+date: 2025-12-24
 categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, main.nf, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
 ---
-
-
 This document outlines best practices for writing Nextflow module `main.nf` files, with special focus on handling tools with many configurable parameters.
 
 
