@@ -3,16 +3,8 @@ layout: default
 title: About
 ---
 
-# About Me
-
-## Haibo Liu, PhD
+## Haibo Liu, PhD²
 **Senior Bioinformatician** | UMass Chan Medical School
-
-**Contact:**
-- 📧 Email: [haibo.liu@umassmed.edu](mailto:haibo.liu@umassmed.edu)
-- 📱 Phone: +1 (515) 357-3719
-- 📍 Location: Worcester, MA
-- 🔗 [GitHub](https://github.com/haibol2016) | [Google Scholar](https://scholar.google.com/citations?user=HCO7A3sAAAAJ&hl=en) | [LinkedIn](https://www.linkedin.com/in/haibo-liu-a4559b69)
 
 ---
 
@@ -151,7 +143,6 @@ Molecular biology, Genetics, Epigenetics, Genomics, Transcriptomics
 Feel free to reach out if you'd like to collaborate, discuss bioinformatics challenges, or have questions about any of my work!
 
 - 📧 **Email**: [haibo.liu@umassmed.edu](mailto:haibo.liu@umassmed.edu)
-- 📱 **Phone**: +1 (515) 357-3719
 - 🔗 **GitHub**: [@haibol2016](https://github.com/haibol2016)
 - 🔗 **Google Scholar**: [View Profile](https://scholar.google.com/citations?user=HCO7A3sAAAAJ&hl=en)
 - 🔗 **LinkedIn**: [haibo-liu-a4559b69](https://www.linkedin.com/in/haibo-liu-a4559b69)

@@ -40,8 +40,14 @@ kramdown:
   syntax_highlighter: rouge
   syntax_highlighter_opts:
     block:
-      line_numbers: true
+      line_numbers: false  # Disable Rouge line numbers - we'll use JavaScript instead
       line_number_start: 1
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  footnote_nr: 1
+  parse_block_html: true
+  parse_span_html: true
 
 # Pagination (requires jekyll-paginate gem - commented out for now)
 # paginate: 10

@@ -16,12 +16,13 @@
     <!-- Syntax highlighting with light theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
     <style>
-      /* Force Rouge table layout to work correctly */
+      /* Force Rouge table layout to work correctly - CRITICAL FIX */
       .highlight table.rouge-table,
       table.rouge-table {
         display: table !important;
         width: 100% !important;
         table-layout: fixed !important;
+        border-collapse: collapse !important;
       }
       .highlight table.rouge-table tbody,
       table.rouge-table tbody {
@@ -35,6 +36,8 @@
       table.rouge-table td {
         display: table-cell !important;
         vertical-align: top !important;
+        border: none !important;
+        padding: 0 !important;
       }
       .highlight table.rouge-table td.rouge-gutter,
       table.rouge-table td.rouge-gutter {
@@ -42,11 +45,22 @@
         width: 50px !important;
         min-width: 50px !important;
         max-width: 50px !important;
+        padding: 16px 8px 16px 16px !important;
+        text-align: right !important;
       }
       .highlight table.rouge-table td.rouge-code,
       table.rouge-table td.rouge-code {
         display: table-cell !important;
         width: auto !important;
+        padding: 16px !important;
+      }
+      /* Ensure pre tags inside table cells preserve line breaks */
+      .highlight table.rouge-table td pre,
+      table.rouge-table td pre {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: pre !important; /* Preserve line breaks */
       }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -59,6 +73,38 @@
   </head>
   <body>
     <div class="wrapper">
+      <nav {% if page.categories or page.tags %}class="nav-right"{% endif %}>
+        <ul>
+          <li><a href="{{ "/" | relative_url }}" {% if page.url == "/" %}class="active"{% endif %}>Home</a></li>
+          <li><a href="{{ "/about" | relative_url }}" {% if page.url == "/about/" %}class="active"{% endif %}>About</a></li>
+          <li><a href="{{ "/archive" | relative_url }}" {% if page.url == "/archive/" %}class="active"{% endif %}>Archive</a></li>
+        </ul>
+      </nav>
+      
+      {% if page.url == "/" %}
+      <header class="landing-header">
+        <h1>Haibo Liu, PhD²</h1>
+        <p class="subtitle">Bioinformatics & Computational Biology | Molecular Genetics</p>
+        <p class="page-subtitle">Senior Bioinformatician @ UMass Medical School | <a href="mailto:haibo.liu@umassmed.edu">haibo.liu@umassmed.edu</a></p>
+        
+        {% if site.social %}
+        <div class="social-links">
+          {% if site.social.github %}
+          <a href="https://github.com/{{ site.social.github }}" title="GitHub" aria-label="GitHub">GitHub</a>
+          {% endif %}
+          {% if site.social.twitter %}
+          <a href="https://twitter.com/{{ site.social.twitter }}" title="Twitter" aria-label="Twitter">Twitter</a>
+          {% endif %}
+          {% if site.social.linkedin %}
+          <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" title="LinkedIn" aria-label="LinkedIn">LinkedIn</a>
+          {% endif %}
+          {% if site.social.email %}
+          <a href="mailto:{{ site.social.email }}" title="Email" aria-label="Email">Email</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </header>
+      {% elsif page.url == "/about/" or page.url == "/archive/" %}
       <header>
         <h1><a href="{{ "/" | relative_url }}">{{ site.title | escape }}</a></h1>
         <p class="subtitle">{{ site.description }}</p>
@@ -80,18 +126,17 @@
         </div>
         {% endif %}
       </header>
+      {% endif %}
       
-      <nav>
-        <ul>
-          <li><a href="{{ "/" | relative_url }}" {% if page.url == "/" %}class="active"{% endif %}>Home</a></li>
-          <li><a href="{{ "/about" | relative_url }}" {% if page.url == "/about/" %}class="active"{% endif %}>About</a></li>
-          <li><a href="{{ "/archive" | relative_url }}" {% if page.url == "/archive/" %}class="active"{% endif %}>Archive</a></li>
-        </ul>
-      </nav>
-      
-      <section>
+      <section {% if page.url == "/archive/" %}class="archive-section"{% endif %}>
 
-      {{ content }}
+      {% if page.url == "/archive/" %}
+        <h1>Archive</h1>
+        <p>All posts organized by year.</p>
+        {% include archive_list.html %}
+      {% else %}
+        {{ content }}
+      {% endif %}
 
       </section>
       <footer>
@@ -99,6 +144,382 @@
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+    <script>
+      // Enhanced code blocks: line numbers, copy button, and collapsible
+      (function() {
+        function enhanceCodeBlocks() {
+          // Find all highlight containers (Rouge generates .highlight divs)
+          // Only process code blocks within post content, not on archive or other pages
+          // Make sure we only target actual code blocks, not lists or other elements
+          var highlights = document.querySelectorAll('article.post .post-content .highlight');
+          
+          // If no post content found, don't process anything (e.g., archive page)
+          if (highlights.length === 0) {
+            return;
+          }
+          
+          highlights.forEach(function(highlight) {
+            // Skip if already processed
+            if (highlight.classList.contains('code-enhanced')) {
+              return;
+            }
+            highlight.classList.add('code-enhanced');
+            
+            // Find the code element - could be in a table (Rouge) or directly in pre
+            var codeElement = highlight.querySelector('code');
+            if (!codeElement) {
+              return;
+            }
+            
+            // Get the actual code content - handle both Rouge table structure and direct pre/code
+            var code = '';
+            var codeHTML = '';
+            var rougeCodeCell = highlight.querySelector('td.rouge-code code, td.code code');
+            if (rougeCodeCell) {
+              // Rouge table structure - get code from the code cell
+              code = rougeCodeCell.textContent || rougeCodeCell.innerText;
+              codeHTML = rougeCodeCell.innerHTML || code;
+            } else {
+              // Direct pre/code structure
+              code = codeElement.textContent || codeElement.innerText;
+              codeHTML = codeElement.innerHTML || code;
+            }
+            
+            var lines = code.split('\n');
+            
+            // Remove empty last line if it exists
+            if (lines.length > 0 && lines[lines.length - 1] === '') {
+              lines.pop();
+            }
+            
+            // Create wrapper
+            var wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            
+            // Detect language from code element classes
+            var language = 'text';
+            var languageClasses = codeElement.className.split(' ');
+            for (var i = 0; i < languageClasses.length; i++) {
+              var cls = languageClasses[i];
+              if (cls.startsWith('language-')) {
+                language = cls.replace('language-', '');
+                break;
+              } else if (cls && cls !== 'highlighter-rouge' && cls !== 'highlight') {
+                language = cls;
+              }
+            }
+            
+            // Create header with all controls
+            var header = document.createElement('div');
+            header.className = 'code-block-header';
+            
+            // Left side: Language display
+            var headerLeft = document.createElement('div');
+            headerLeft.className = 'code-header-left';
+            var languageDisplay = document.createElement('span');
+            languageDisplay.className = 'code-language';
+            languageDisplay.textContent = language.toUpperCase();
+            headerLeft.appendChild(languageDisplay);
+            
+            // Right side: Control buttons
+            var headerRight = document.createElement('div');
+            headerRight.className = 'code-header-right';
+            
+            // Font size controls
+            var fontSizeGroup = document.createElement('div');
+            fontSizeGroup.className = 'font-size-controls';
+            var fontSizeDown = document.createElement('button');
+            fontSizeDown.className = 'code-control-button';
+            fontSizeDown.innerHTML = 'A-';
+            fontSizeDown.setAttribute('aria-label', 'Decrease font size');
+            var fontSizeUp = document.createElement('button');
+            fontSizeUp.className = 'code-control-button';
+            fontSizeUp.innerHTML = 'A+';
+            fontSizeUp.setAttribute('aria-label', 'Increase font size');
+            fontSizeGroup.appendChild(fontSizeDown);
+            fontSizeGroup.appendChild(fontSizeUp);
+            
+            // Word wrap toggle
+            var wordWrapButton = document.createElement('button');
+            wordWrapButton.className = 'code-control-button';
+            wordWrapButton.innerHTML = '↩ Wrap';
+            wordWrapButton.setAttribute('aria-label', 'Toggle word wrap');
+            
+            // Download button
+            var downloadButton = document.createElement('button');
+            downloadButton.className = 'code-control-button';
+            downloadButton.innerHTML = '⬇ Download';
+            downloadButton.setAttribute('aria-label', 'Download code');
+            
+            // Copy button
+            var copyButton = document.createElement('button');
+            copyButton.className = 'code-control-button';
+            copyButton.innerHTML = '📋 Copy';
+            copyButton.setAttribute('aria-label', 'Copy code');
+            
+            // Collapse button
+            var collapseButton = document.createElement('button');
+            collapseButton.className = 'code-control-button';
+            collapseButton.innerHTML = '▼ Collapse';
+            collapseButton.setAttribute('aria-label', 'Collapse code block');
+            
+            headerRight.appendChild(fontSizeGroup);
+            headerRight.appendChild(wordWrapButton);
+            headerRight.appendChild(downloadButton);
+            headerRight.appendChild(copyButton);
+            headerRight.appendChild(collapseButton);
+            
+            header.appendChild(headerLeft);
+            header.appendChild(headerRight);
+            
+            // Create code container with line numbers
+            var codeContainer = document.createElement('div');
+            codeContainer.className = 'code-with-line-numbers';
+            
+            // Create line numbers container
+            var lineNumbers = document.createElement('div');
+            lineNumbers.className = 'line-numbers';
+            
+            // Create code content container
+            var codeContent = document.createElement('div');
+            codeContent.className = 'code-content';
+            
+            // Create new pre and code elements
+            var newPre = document.createElement('pre');
+            var newCode = document.createElement('code');
+            
+            // Preserve language class if it exists
+            if (codeElement.className) {
+              newCode.className = codeElement.className;
+            }
+            
+            // Set code content - try to preserve HTML for syntax highlighting
+            if (rougeCodeCell && rougeCodeCell.innerHTML) {
+              newCode.innerHTML = codeHTML;
+            } else if (codeElement.innerHTML) {
+              newCode.innerHTML = codeHTML;
+            } else {
+              newCode.textContent = code;
+            }
+            newPre.appendChild(newCode);
+            codeContent.appendChild(newPre);
+            
+            // Add line numbers - one per line
+            lines.forEach(function(line, index) {
+              var lineNum = document.createElement('span');
+              lineNum.className = 'line-number';
+              lineNum.textContent = (index + 1);
+              lineNumbers.appendChild(lineNum);
+            });
+            
+            // Assemble code container
+            codeContainer.appendChild(lineNumbers);
+            codeContainer.appendChild(codeContent);
+            
+            // Assemble wrapper
+            wrapper.appendChild(header);
+            wrapper.appendChild(codeContainer);
+            
+            // Font size controls
+            var currentFontSize = 85; // Default percentage
+            fontSizeDown.addEventListener('click', function(e) {
+              e.stopPropagation();
+              currentFontSize = Math.max(60, currentFontSize - 5);
+              codeContent.style.fontSize = currentFontSize + '%';
+              lineNumbers.style.fontSize = currentFontSize + '%';
+            });
+            
+            fontSizeUp.addEventListener('click', function(e) {
+              e.stopPropagation();
+              currentFontSize = Math.min(120, currentFontSize + 5);
+              codeContent.style.fontSize = currentFontSize + '%';
+              lineNumbers.style.fontSize = currentFontSize + '%';
+            });
+            
+            // Word wrap toggle
+            var isWrapped = false;
+            wordWrapButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              isWrapped = !isWrapped;
+              if (isWrapped) {
+                codeContent.style.whiteSpace = 'pre-wrap';
+                codeContent.style.wordBreak = 'break-word';
+                wordWrapButton.innerHTML = '→ No Wrap';
+                wrapper.classList.add('word-wrapped');
+              } else {
+                codeContent.style.whiteSpace = 'pre';
+                codeContent.style.wordBreak = 'normal';
+                wordWrapButton.innerHTML = '↩ Wrap';
+                wrapper.classList.remove('word-wrapped');
+              }
+            });
+            
+            // Download button functionality
+            downloadButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var extension = language === 'bash' || language === 'sh' ? 'sh' :
+                              language === 'python' ? 'py' :
+                              language === 'javascript' || language === 'js' ? 'js' :
+                              language === 'groovy' ? 'groovy' :
+                              language === 'yaml' ? 'yml' :
+                              language === 'json' ? 'json' :
+                              language === 'r' ? 'r' :
+                              'txt';
+              var blob = new Blob([code], { type: 'text/plain' });
+              var url = URL.createObjectURL(blob);
+              var a = document.createElement('a');
+              a.href = url;
+              a.download = 'code.' + extension;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            });
+            
+            // Copy button functionality
+            copyButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              navigator.clipboard.writeText(code).then(function() {
+                var originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '✓ Copied!';
+                copyButton.classList.add('copied');
+                setTimeout(function() {
+                  copyButton.innerHTML = originalText;
+                  copyButton.classList.remove('copied');
+                }, 2000);
+              }).catch(function(err) {
+                // Fallback for older browsers
+                var textArea = document.createElement('textarea');
+                textArea.value = code;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                  document.execCommand('copy');
+                  copyButton.innerHTML = '✓ Copied!';
+                  setTimeout(function() {
+                    copyButton.innerHTML = '📋 Copy';
+                  }, 2000);
+                } catch (err) {
+                  copyButton.innerHTML = '✗ Failed';
+                  setTimeout(function() {
+                    copyButton.innerHTML = '📋 Copy';
+                  }, 2000);
+                }
+                document.body.removeChild(textArea);
+              });
+            });
+            
+            // Collapse button functionality
+            var isCollapsed = false;
+            collapseButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              isCollapsed = !isCollapsed;
+              if (isCollapsed) {
+                codeContainer.style.display = 'none';
+                collapseButton.innerHTML = '▶ Expand';
+                wrapper.classList.add('collapsed');
+              } else {
+                codeContainer.style.display = 'flex';
+                collapseButton.innerHTML = '▼ Collapse';
+                wrapper.classList.remove('collapsed');
+              }
+            });
+            
+            // Replace the entire highlight div
+            if (highlight.parentNode) {
+              highlight.parentNode.replaceChild(wrapper, highlight);
+            }
+          });
+        }
+        
+        // Run on page load and after a short delay to catch any late-loading content
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', enhanceCodeBlocks);
+        } else {
+          enhanceCodeBlocks();
+        }
+        setTimeout(enhanceCodeBlocks, 100);
+      })();
+      
+      // Fix archive page - unescape HTML that was wrapped in code blocks
+      (function() {
+        function unescapeHtml(text) {
+          var map = {
+            '&amp;': '&',
+            '&lt;': '<',
+            '&gt;': '>',
+            '&quot;': '"',
+            '&#39;': "'"
+          };
+          return text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;/g, function(m) { return map[m]; });
+        }
+        
+        function fixArchiveHTML() {
+          if (window.location.pathname.includes('/archive') || window.location.pathname.endsWith('/archive.html')) {
+            // Find all code blocks that contain archive content
+            var codeBlocks = document.querySelectorAll('.language-plaintext.highlighter-rouge');
+            codeBlocks.forEach(function(block) {
+              // Check for Rouge table structure
+              var rougeTable = block.querySelector('table.rouge-table');
+              var textSource = '';
+              
+              if (rougeTable) {
+                // Extract from Rouge code cell (not gutter) - try pre first, then code
+                var codePre = rougeTable.querySelector('td.rouge-code pre');
+                var codeCode = rougeTable.querySelector('td.rouge-code code');
+                if (codePre) {
+                  textSource = codePre.textContent || codePre.innerText;
+                } else if (codeCode) {
+                  textSource = codeCode.textContent || codeCode.innerText;
+                } else {
+                  // Fallback: get text from the entire code cell
+                  var codeCell = rougeTable.querySelector('td.rouge-code');
+                  if (codeCell) {
+                    textSource = codeCell.textContent || codeCell.innerText;
+                  }
+                }
+              } else {
+                // Regular code block
+                var code = block.querySelector('code');
+                var pre = block.querySelector('pre');
+                textSource = code ? (code.textContent || code.innerText) : (pre ? (pre.textContent || pre.innerText) : '');
+              }
+              
+              if (textSource && (textSource.includes('archive-year') || textSource.includes('archive-item'))) {
+                // Unescape HTML entities
+                var htmlContent = unescapeHtml(textSource);
+                
+                // Create a new div with the unescaped HTML
+                var newDiv = document.createElement('div');
+                newDiv.innerHTML = htmlContent;
+                
+                // Find the parent to replace in (could be section or another container)
+                var parent = block.parentNode;
+                if (parent) {
+                  // Replace the code block wrapper with the actual HTML
+                  parent.replaceChild(newDiv, block);
+                } else {
+                  block.replaceWith(newDiv);
+                }
+              }
+            });
+          }
+        }
+        
+        // Run on page load
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', fixArchiveHTML);
+        } else {
+          fixArchiveHTML();
+        }
+        // Run multiple times to catch any late-loading content
+        setTimeout(fixArchiveHTML, 100);
+        setTimeout(fixArchiveHTML, 500);
+        setTimeout(fixArchiveHTML, 1000);
+      })();
+    </script>
   </body>
 </html>
 

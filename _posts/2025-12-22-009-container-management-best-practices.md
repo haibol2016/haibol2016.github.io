@@ -89,6 +89,7 @@ dependencies:
 ### Best Practices for Conda/Mamba
 
 1. **Pin Versions:**
+
    ```yaml
    dependencies:
      - tool_name=1.2.3  # Pinned version
@@ -104,6 +105,7 @@ dependencies:
    ```
 
 3. **Specify Channel Priority:**
+
    ```yaml
    channels:
      - bioconda
@@ -113,6 +115,7 @@ dependencies:
    ```
 
 4. **Minimize Dependencies:**
+
    ```yaml
    # ✅ Good: Only essential dependencies
    dependencies:
@@ -127,6 +130,7 @@ dependencies:
    ```
 
 5. **Use Mamba for Faster Resolution:**
+
    ```bash
    # In nextflow.config
    conda {
