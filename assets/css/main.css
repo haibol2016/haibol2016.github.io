@@ -424,13 +424,17 @@ a:hover {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 85%;
   line-height: 1.45;
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
   visibility: visible !important;
 }
 
 .code-with-line-numbers .line-number {
   display: block !important;
   visibility: visible !important;
+  white-space: nowrap;
+  line-height: 1.45;
+  height: 1.45em;
 }
 
 /* Ensure blog post code block line numbers are always visible */
@@ -511,6 +515,7 @@ a:hover {
   font-size: 85%;
   line-height: 1.45;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  display: block;
 }
 
 .code-with-line-numbers .code-content code {

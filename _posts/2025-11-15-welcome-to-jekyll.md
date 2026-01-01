@@ -8,7 +8,7 @@ author: Haibo Liu, PhD
 toc: true
 ---
 
-Welcome to my blog about bioinformatics and data science! This is a sample post to get you started.
+Welcome to my blog about bioinformatics and data science!
 
 ## What You'll Find Here
 
