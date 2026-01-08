@@ -5,7 +5,83 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- SEO tags would go here if jekyll-seo-tag plugin is installed -->
+    <!-- Primary Meta Tags -->
+    <title>{% if page.title %}{{ page.title | escape }} | {{ site.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+    {% if page.description %}
+    <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
+    {% elsif page.excerpt %}
+    <meta name="description" content="{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}">
+    {% else %}
+    <meta name="description" content="{{ site.description }}">
+    {% endif %}
+    <meta name="author" content="{{ page.author | default: site.author }}">
+    <meta name="keywords" content="{% if page.tags %}{{ page.tags | join: ', ' }}{% endif %}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
+    {% if page.description %}
+    <meta property="og:description" content="{{ page.description | strip_html | strip_newlines | truncate: 200 }}">
+    {% elsif page.excerpt %}
+    <meta property="og:description" content="{{ page.excerpt | strip_html | strip_newlines | truncate: 200 }}">
+    {% else %}
+    <meta property="og:description" content="{{ site.description }}">
+    {% endif %}
+    <meta property="og:site_name" content="{{ site.title }}">
+    {% if page.image %}
+    <meta property="og:image" content="{{ page.image | absolute_url }}">
+    {% elsif site.image %}
+    <meta property="og:image" content="{{ site.image | absolute_url }}">
+    {% endif %}
+    {% if page.layout == 'post' %}
+    <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+    <meta property="article:author" content="{{ page.author | default: site.author }}">
+    {% if page.tags %}
+    {% for tag in page.tags %}
+    <meta property="article:tag" content="{{ tag }}">
+    {% endfor %}
+    {% endif %}
+    {% if page.categories %}
+    {% for category in page.categories %}
+    <meta property="article:section" content="{{ category }}">
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    {% if site.social.twitter %}
+    <meta name="twitter:site" content="@{{ site.social.twitter }}">
+    <meta name="twitter:creator" content="@{{ site.social.twitter }}">
+    {% endif %}
+    <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
+    {% if page.description %}
+    <meta name="twitter:description" content="{{ page.description | strip_html | strip_newlines | truncate: 200 }}">
+    {% elsif page.excerpt %}
+    <meta name="twitter:description" content="{{ page.excerpt | strip_html | strip_newlines | truncate: 200 }}">
+    {% else %}
+    <meta name="twitter:description" content="{{ site.description }}">
+    {% endif %}
+    {% if page.image %}
+    <meta name="twitter:image" content="{{ page.image | absolute_url }}">
+    {% elsif site.image %}
+    <meta name="twitter:image" content="{{ site.image | absolute_url }}">
+    {% endif %}
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ "/favicon.svg" | relative_url }}">
+    <link rel="icon" type="image/png" href="{{ "/favicon.png" | relative_url }}">
+    <link rel="apple-touch-icon" href="{{ "/apple-touch-icon.png" | relative_url }}">
+    <link rel="shortcut icon" href="{{ "/favicon.ico" | relative_url }}">
+    
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | relative_url }}">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | relative_url }}">
     
@@ -70,6 +146,84 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-groovy.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    
+    <!-- Mermaid.js for diagram rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+      .mermaid {
+        text-align: center;
+        margin: 20px 0;
+        background-color: #f8f8f8;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      .mermaid svg {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
+    
+    <!-- Structured Data (JSON-LD) -->
+    {% if page.layout == 'post' %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "{{ page.title | escape }}",
+      "description": "{% if page.description %}{{ page.description | strip_html | strip_newlines | truncate: 200 }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 200 }}{% else %}{{ site.description }}{% endif %}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ page.author | default: site.author }}",
+        {% if site.social.email %}"email": "{{ site.social.email }}",{% endif %}
+        {% if site.social.twitter %}"sameAs": "https://twitter.com/{{ site.social.twitter }}"{% endif %}
+      },
+      "datePublished": "{{ page.date | date_to_xmlschema }}",
+      "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site.title }}",
+        {% if site.image %}"logo": {
+          "@type": "ImageObject",
+          "url": "{{ site.image | absolute_url }}"
+        }{% endif %}
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ page.url | absolute_url }}"
+      }
+      {% if page.image %},"image": "{{ page.image | absolute_url }}"{% endif %}
+      {% if page.tags %},"keywords": "{{ page.tags | join: ', ' }}"{% endif %}
+    }
+    </script>
+    {% else %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "{{ site.title }}",
+      "description": "{{ site.description }}",
+      "url": "{{ site.url | absolute_url }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ site.author }}",
+        {% if site.social.email %}"email": "{{ site.social.email }}",{% endif %}
+        {% if site.social.twitter %}"sameAs": "https://twitter.com/{{ site.social.twitter }}"{% endif %}
+      }
+    }
+    </script>
+    {% endif %}
+    
+    <!-- Analytics placeholder (replace with your analytics code) -->
+    {% if site.google_analytics %}
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ site.google_analytics }}');
+    </script>
+    {% endif %}
   </head>
   <body>
     <div class="wrapper">
@@ -528,6 +682,98 @@
         setTimeout(fixArchiveHTML, 100);
         setTimeout(fixArchiveHTML, 500);
         setTimeout(fixArchiveHTML, 1000);
+      })();
+      
+      // Initialize Mermaid diagrams
+      (function() {
+        function initMermaid() {
+          // Find all code blocks with mermaid language
+          // Handle both Rouge-generated HTML and standard code blocks
+          var mermaidBlocks = document.querySelectorAll('code.language-mermaid, code.language-mermaid.highlighter-rouge, pre code.language-mermaid');
+          
+          if (mermaidBlocks.length === 0) {
+            return;
+          }
+          
+          var processedCount = 0;
+          
+          mermaidBlocks.forEach(function(block, index) {
+            // Skip if already processed
+            if (block.classList.contains('mermaid-processed')) {
+              return;
+            }
+            block.classList.add('mermaid-processed');
+            
+            // Get the mermaid code - handle Rouge table structure
+            var mermaidCode = '';
+            var rougeCodeCell = block.closest('.highlight') ? block.closest('.highlight').querySelector('td.rouge-code code') : null;
+            
+            if (rougeCodeCell) {
+              mermaidCode = rougeCodeCell.textContent || rougeCodeCell.innerText;
+            } else {
+              mermaidCode = block.textContent || block.innerText;
+            }
+            
+            mermaidCode = mermaidCode.trim();
+            if (!mermaidCode) {
+              return;
+            }
+            
+            // Create a div to replace the code block
+            var mermaidDiv = document.createElement('div');
+            mermaidDiv.className = 'mermaid';
+            mermaidDiv.textContent = mermaidCode;
+            mermaidDiv.id = 'mermaid-' + index;
+            
+            // Find the parent container (could be pre, highlight div, or code-block-wrapper)
+            var parent = block.parentElement;
+            var containerToReplace = null;
+            
+            // Check for Rouge highlight structure
+            var highlightDiv = block.closest('.highlight');
+            if (highlightDiv) {
+              containerToReplace = highlightDiv;
+            } else if (parent.tagName === 'PRE') {
+              containerToReplace = parent;
+            } else if (parent.classList.contains('code-block-wrapper')) {
+              containerToReplace = parent;
+            } else {
+              containerToReplace = block;
+            }
+            
+            // Replace the container with mermaid div
+            if (containerToReplace && containerToReplace.parentNode) {
+              containerToReplace.parentNode.replaceChild(mermaidDiv, containerToReplace);
+              processedCount++;
+            }
+          });
+          
+          // Initialize Mermaid after processing blocks
+          if (typeof mermaid !== 'undefined' && processedCount > 0) {
+            mermaid.initialize({ 
+              startOnLoad: true,
+              theme: 'default',
+              securityLevel: 'loose',
+              flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+              }
+            });
+            // Force render if startOnLoad didn't work
+            mermaid.run();
+          }
+        }
+        
+        // Run after DOM is ready and after a delay to ensure all content is loaded
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initMermaid, 200);
+            setTimeout(initMermaid, 500);
+          });
+        } else {
+          setTimeout(initMermaid, 200);
+          setTimeout(initMermaid, 500);
+        }
       })();
     </script>
   </body>

@@ -45,6 +45,8 @@ layout: default
   {%- endif -%}
   </div>
 
+  {%- include social_sharing.html -%}
+
   {%- if page.categories -%}
     {%- assign related_posts = site.posts | where_exp:"post", "post.url != page.url" | where_exp:"post", "post.categories contains page.categories[0]" | limit: 3 -%}
     {%- if related_posts.size > 0 -%}
@@ -62,9 +64,7 @@ layout: default
     {%- endif -%}
   {%- endif -%}
 
-  {%- if site.disqus.shortname -%}
-    {%- include disqus_comments.html -%}
-  {%- endif -%}
+  {%- include comments.html -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>

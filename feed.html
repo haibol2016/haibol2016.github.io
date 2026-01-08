@@ -1,0 +1,278 @@
+---
+layout: default
+title: RSS Feed
+permalink: /feed.html
+---
+
+<div class="rss-page">
+  <h1>RSS Feed</h1>
+  
+  <div class="rss-info">
+    <p>Subscribe to our blog updates using an RSS reader. RSS (Really Simple Syndication) allows you to stay updated with new blog posts without visiting the website.</p>
+    
+    <div class="rss-feed-box">
+      <h2>Feed URL</h2>
+      <div class="feed-url">
+        <code id="feed-url">{{ site.url }}{{ "/feed.xml" | relative_url }}</code>
+        <button onclick="copyFeedUrl()" class="copy-feed-btn" aria-label="Copy feed URL">
+          📋 Copy URL
+        </button>
+      </div>
+      <p><a href="{{ "/feed.xml" | relative_url }}" class="feed-link">View raw XML feed →</a></p>
+    </div>
+    
+    <div class="rss-instructions">
+      <h2>How to Subscribe</h2>
+      
+      <h3>Using an RSS Reader</h3>
+      <p>Copy the feed URL above and paste it into your favorite RSS reader:</p>
+      <ul>
+        <li><strong>Feedly</strong>: <a href="https://feedly.com" target="_blank" rel="noopener">feedly.com</a> - Popular web-based reader</li>
+        <li><strong>Inoreader</strong>: <a href="https://www.inoreader.com" target="_blank" rel="noopener">inoreader.com</a> - Feature-rich reader</li>
+        <li><strong>NewsBlur</strong>: <a href="https://www.newsblur.com" target="_blank" rel="noopener">newsblur.com</a> - Social RSS reader</li>
+        <li><strong>The Old Reader</strong>: <a href="https://theoldreader.com" target="_blank" rel="noopener">theoldreader.com</a> - Simple and clean</li>
+      </ul>
+      
+      <h3>Browser Extensions</h3>
+      <ul>
+        <li><strong>Chrome</strong>: <a href="https://chrome.google.com/webstore/search/rss" target="_blank" rel="noopener">RSS Subscription Extension</a></li>
+        <li><strong>Firefox</strong>: Built-in RSS support (Live Bookmarks)</li>
+        <li><strong>Safari</strong>: Built-in RSS support</li>
+      </ul>
+      
+      <h3>Mobile Apps</h3>
+      <ul>
+        <li><strong>iOS</strong>: Reeder, NetNewsWire, Unread</li>
+        <li><strong>Android</strong>: Feedly, Inoreader, NewsBlur</li>
+      </ul>
+    </div>
+    
+    <div class="recent-posts-preview">
+      <h2>Recent Posts</h2>
+      <p>Here are the latest posts from our blog:</p>
+      <ul class="post-preview-list">
+        {% for post in site.posts limit:10 %}
+        <li>
+          <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <p><a href="{{ "/archive" | relative_url }}">View all posts →</a></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.rss-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.rss-page h1 {
+  color: #24292e;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+.rss-info {
+  line-height: 1.6;
+}
+
+.rss-feed-box {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 30px 0;
+}
+
+.rss-feed-box h2 {
+  margin-top: 0;
+  color: #24292e;
+  font-size: 1.3em;
+}
+
+.feed-url {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.feed-url code {
+  flex: 1;
+  min-width: 200px;
+  background: #fff;
+  padding: 10px 15px;
+  border: 1px solid #d1d5da;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.copy-feed-btn {
+  padding: 10px 16px;
+  background: #0366d6;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.copy-feed-btn:hover {
+  background: #0256c2;
+}
+
+.copy-feed-btn:active {
+  background: #0249a8;
+}
+
+.feed-link {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.feed-link:hover {
+  text-decoration: underline;
+}
+
+.rss-instructions {
+  margin: 40px 0;
+}
+
+.rss-instructions h2 {
+  color: #24292e;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.rss-instructions h3 {
+  color: #586069;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.rss-instructions ul {
+  margin: 10px 0 20px 20px;
+}
+
+.rss-instructions li {
+  margin: 8px 0;
+}
+
+.rss-instructions a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.rss-instructions a:hover {
+  text-decoration: underline;
+}
+
+.recent-posts-preview {
+  margin: 40px 0;
+  padding-top: 30px;
+  border-top: 1px solid #e1e4e8;
+}
+
+.recent-posts-preview h2 {
+  color: #24292e;
+  margin-bottom: 15px;
+}
+
+.post-preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.post-preview-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.post-preview-list li:last-child {
+  border-bottom: none;
+}
+
+.post-preview-list a {
+  color: #0366d6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.post-preview-list a:hover {
+  text-decoration: underline;
+}
+
+.post-date {
+  display: block;
+  color: #586069;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .rss-page {
+    padding: 15px;
+  }
+  
+  .feed-url {
+    flex-direction: column;
+  }
+  
+  .feed-url code {
+    width: 100%;
+  }
+  
+  .copy-feed-btn {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+function copyFeedUrl() {
+  const feedUrl = document.getElementById('feed-url').textContent;
+  const button = event.target;
+  const originalText = button.textContent;
+  
+  navigator.clipboard.writeText(feedUrl).then(function() {
+    button.textContent = '✓ Copied!';
+    button.style.background = '#28a745';
+    setTimeout(function() {
+      button.textContent = originalText;
+      button.style.background = '';
+    }, 2000);
+  }).catch(function(err) {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = feedUrl;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      button.textContent = '✓ Copied!';
+      button.style.background = '#28a745';
+      setTimeout(function() {
+        button.textContent = originalText;
+        button.style.background = '';
+      }, 2000);
+    } catch (err) {
+      alert('Failed to copy URL');
+    }
+    document.body.removeChild(textArea);
+  });
+}
+</script>
+

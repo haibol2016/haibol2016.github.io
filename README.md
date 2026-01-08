@@ -110,6 +110,8 @@ git push origin gh-pages
 
 ## Writing Posts
 
+### Markdown Posts
+
 Create new posts in `_posts/` directory with the format:
 `YYYY-MM-DD-post-title.md`
 
@@ -125,6 +127,15 @@ author: Your Name
 ---
 ```
 
+### Jupyter Notebook Posts
+
+You can convert Jupyter notebooks to blog posts! See `JUPYTER_NOTEBOOKS_GUIDE.md` for details.
+
+Quick start:
+```bash
+python3 convert_notebook_to_post.py your_notebook.ipynb --date 2026-01-15 --title "Your Post Title"
+```
+
 ## Features
 
 - ✅ Responsive design
@@ -134,6 +145,9 @@ author: Your Name
 - ✅ Sitemap
 - ✅ Tag support
 - ✅ Clean, modern design
+- ✅ Jupyter notebook support (convert notebooks to posts)
+- ✅ Social sharing buttons
+- ✅ SEO optimized (Open Graph, Twitter Cards, structured data)
 
 ## Resources
 

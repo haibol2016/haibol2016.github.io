@@ -1226,6 +1226,94 @@ footer a:hover {
 }
 
 /* ============================================
+   Social Sharing Buttons
+   ============================================ */
+.social-sharing {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e1e4e8;
+}
+
+.social-sharing h4 {
+  color: #24292e;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sharing-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #24292e;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.share-button:hover {
+  background-color: #f6f8fa;
+  border-color: #d1d5da;
+  text-decoration: none;
+}
+
+.share-button:active {
+  background-color: #e1e4e8;
+}
+
+.share-button svg {
+  flex-shrink: 0;
+}
+
+.share-twitter:hover {
+  background-color: #1da1f2;
+  border-color: #1da1f2;
+  color: #fff;
+}
+
+.share-linkedin:hover {
+  background-color: #0077b5;
+  border-color: #0077b5;
+  color: #fff;
+}
+
+.share-facebook:hover {
+  background-color: #1877f2;
+  border-color: #1877f2;
+  color: #fff;
+}
+
+.share-reddit:hover {
+  background-color: #ff4500;
+  border-color: #ff4500;
+  color: #fff;
+}
+
+.share-copy:hover {
+  background-color: #586069;
+  border-color: #586069;
+  color: #fff;
+}
+
+.share-button.copied {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff;
+}
+
+/* ============================================
    Responsive Design
    ============================================ */
 @media (max-width: 768px) {
@@ -1259,5 +1347,14 @@ footer a:hover {
   .post-content .highlight td.lineno {
     min-width: 40px;
     padding: 0 8px 0 0;
+  }
+  
+  .sharing-buttons {
+    flex-direction: column;
+  }
+  
+  .share-button {
+    width: 100%;
+    justify-content: center;
   }
 }

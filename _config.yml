@@ -3,9 +3,19 @@ title: "Bioinformatics & Data Science Blog"
 description: "Exploring bioinformatics, data science, and computational biology"
 author: "Haibo Liu"
 email: "haibol2017@gmail.com"
-url: "https://github.com/haibol2016" # Update with your GitHub username
-baseurl: "" # Leave empty if using username.github.io
+# Update with your actual GitHub Pages URL (e.g., https://username.github.io or https://yourdomain.com)
+url: "https://haibol2016.github.io" # Update with your GitHub Pages URL
+baseurl: "" # Leave empty if using username.github.io, or set to "/repository-name" if using project pages
 timezone: America/New_York  # Eastern Time (ET) - adjust to your timezone
+lang: en-US
+
+# SEO Settings
+# Add a default image for social sharing (optional)
+# image: "/assets/images/og-image.png"
+
+# Analytics (uncomment and add your tracking ID)
+# google_analytics: "G-XXXXXXXXXX"  # Google Analytics 4 tracking ID
+# google_tag_manager: "GTM-XXXXXXX"  # Google Tag Manager ID (alternative)
 
 # Social media links (update with your accounts)
 social:
@@ -21,6 +31,12 @@ future: true  # Show posts with future dates
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+
+# RSS Feed optimization (jekyll-feed plugin)
+feed:
+  excerpt_only: false  # Include full content in feed
+  limit: 20  # Number of posts to include in feed
+  path: feed.xml  # Feed file path
 
 # Theme settings
 # theme: minima  # Commented out - using custom layouts instead
@@ -52,4 +68,24 @@ kramdown:
 # Pagination (requires jekyll-paginate gem - commented out for now)
 # paginate: 10
 # paginate_path: "/page:num/"
+
+# Comment system configuration
+# Option 1: Giscus (Recommended - Free, GitHub Discussions-based, no ads)
+# To set up Giscus:
+# 1. Install Giscus app: https://github.com/apps/giscus (IMPORTANT: Install first!)
+# 2. Enable GitHub Discussions in your repository settings
+# 3. Go to https://giscus.app/
+# 4. Connect your GitHub account
+# 5. Select your repository
+# 6. Configure settings and copy the configuration values below
+giscus:
+  repo: "haibol2016/haibol2016.github.io"  # Format: "username/repo"
+  repo_id: "MDEwOlJlcG9zaXRvcnkyODAwNDI3ODg="  # From giscus.app
+  category: "General"  # Discussion category name
+  category_id: "DIC_kwDOELEdJM4Cz8bF"  # From giscus.app
+
+# Option 2: Disqus (Alternative - requires account, may show ads)
+# Uncomment and configure if you prefer Disqus over Giscus
+# disqus:
+#   shortname: "your-disqus-shortname"
 
