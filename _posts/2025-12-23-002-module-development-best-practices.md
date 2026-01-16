@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, bioinformatics, workflows, best-practices, development]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Complete guide to developing Nextflow modules, covering module structure, naming conventions, required files, metadata, documentation, testing, and maintenance best practices."
 ---
 This document outlines best practices for developing Nextflow modules, covering the complete module development lifecycle from initial design to testing and maintenance.
 

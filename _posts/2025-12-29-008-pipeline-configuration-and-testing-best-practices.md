@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, configuration, testing, bioinformatics, workflows, best-practices, hpc, aws]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Best practices for creating and managing Nextflow configuration files, including nextflow_schema.json, modules.json, nextflow.config, HPC cluster configurations, AWS Batch configurations, and testing strategies."
 ---
 This document outlines best practices for creating and managing Nextflow configuration files, including `nextflow_schema.json`, `modules.json`, `nextflow.config`, HPC cluster configurations, AWS Batch configurations, parameter files, and testing strategies.
 

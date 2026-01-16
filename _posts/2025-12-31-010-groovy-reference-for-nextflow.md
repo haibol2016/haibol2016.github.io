@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, groovy, programming, bioinformatics, workflows, reference]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Essential Groovy syntax and examples specifically tailored for building sophisticated Nextflow pipelines, covering the most commonly used Groovy features in workflow development."
 ---
 This guide provides essential Groovy syntax and examples specifically tailored for building sophisticated Nextflow pipelines. It focuses on the most commonly used Groovy features in Nextflow workflows.
 

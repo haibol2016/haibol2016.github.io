@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, channels, bioinformatics, workflows, pipelines, reference]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Comprehensive reference guide to Nextflow channel factories with detailed examples, covering basic factories, file operations, data transformations, and advanced channel manipulation techniques."
 ---
 This document provides a comprehensive reference guide to Nextflow channel factories with detailed examples and use cases.
 

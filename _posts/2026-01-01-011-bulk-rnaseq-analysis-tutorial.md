@@ -6,6 +6,7 @@ categories: [bioinformatics, rna-seq, genomics, data-analysis]
 tags: [rna-seq, bulk-rna-seq, single-cell-rna-seq, spatial-transcriptomics, fastqc, fastp, adapter-trimming, star, bigwig, coverage-tracks, qorts, rseqc, qualimap, featurecounts, htseq, expression-quantification, contamination-detection, igv, cleanup-rnaseq, deseq2, batch-effect, combat, svaseq, ruv-seq, visualization, heatmap, sankey-diagram, gsea, fgsea, bioinformatics, tutorial]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "A beginner's guide to bulk RNA-seq data analysis covering the complete pipeline from raw reads to gene set enrichment, including quality control, alignment, quantification, differential expression, and functional analysis."
 ---
 
 ## Introduction

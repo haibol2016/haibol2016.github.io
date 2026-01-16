@@ -6,6 +6,7 @@ categories: [bioinformatics, single-cell, genomics, data-analysis]
 tags: [single-cell-rna-seq, cell-type-annotation, scRNA-seq, reference-mapping, marker-genes, machine-learning, bioinformatics, scType, SingleR, Azimuth, scArches, CellTypist, scANVI, Seurat, Scanpy, bioinformatics]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Comprehensive comparison of single-cell type annotation tools covering reference-based, marker-based, and machine learning approaches, with practical guidance on when and how to use each method."
 ---
 
 ## Introduction

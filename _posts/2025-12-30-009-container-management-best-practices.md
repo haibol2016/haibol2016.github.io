@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, containers, conda, docker, singularity, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Best practices for using conda/mamba environments and Docker/Singularity containers in Nextflow pipelines, including building cross-platform images, dependency management, and ensuring reproducibility."
 ---
 ## Introduction
 

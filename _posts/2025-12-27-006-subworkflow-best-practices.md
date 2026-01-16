@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, subworkflows, modules, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Best practices for creating Nextflow subworkflows that combine multiple modules into reusable, composable workflow units, covering structure, organization, input/output handling, and testing."
 ---
 This document outlines best practices for creating Nextflow subworkflows that combine multiple modules into reusable, composable workflow units.
 

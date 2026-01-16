@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, workflows, main.nf, bioinformatics, pipelines, best-practices]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Best practices for writing the main workflow file (main.nf) for Nextflow pipelines, covering file structure, module imports, workflow orchestration, error handling, and documentation."
 ---
 This document outlines best practices for writing the main workflow file (`main.nf`) for Nextflow pipelines. This is the entry point that users run and orchestrates all modules and subworkflows.
 

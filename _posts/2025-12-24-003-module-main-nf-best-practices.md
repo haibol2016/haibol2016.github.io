@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, main.nf, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Best practices for writing Nextflow module main.nf files, with special focus on handling tools with many configurable parameters, process structure, directives, and input/output definitions."
 ---
 This document outlines best practices for writing Nextflow module `main.nf` files, with special focus on handling tools with many configurable parameters.
 

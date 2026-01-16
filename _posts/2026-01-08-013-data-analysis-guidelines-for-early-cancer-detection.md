@@ -1,35 +1,18 @@
 ---
 layout: post
-title: "Sequencing Data Analysis Guidelines for Early Cancer Detection"
+title: "Guidelines for sequencing-based somatic variant analysis"
 date: 2026-01-08
 categories: [bioinformatics, genomics, cancer-research, data-analysis]
 tags: [sequencing, variant-calling, cancer-detection, WGS, WES, bioinformatics, genomics, pipelines, somatic-variants, MSI, tumor-purity, UMI, ctDNA]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Comprehensive step-by-step guidelines for sequencing-based somatic variant analysis using WGS/WES data, from raw FASTQ files to prioritized variants using consensus-based multi-tool pipelines."
 ---
 
 
 ## Overview
 
-This document provides comprehensive, step-by-step guidelines for analyzing sequencing data to detect genetic variants for early cancer detection, from raw FASTQ files to prioritized variants. The pipeline is designed to work with both **Whole Genome Sequencing (WGS)** and **Whole Exome Sequencing (WES)** data, with specific considerations and parameters for each sequencing type. The pipeline emphasizes the use of multiple tools at each stage for consensus building and majority voting to improve accuracy and reduce false positives.
-
-**Sequencing Type Considerations**:
-
-- **WGS (Whole Genome Sequencing)**: 
-  - Provides comprehensive coverage of the entire genome, including non-coding regions
-  - No target region restrictions; variant calling genome-wide
-  - Lower mean coverage requirements (60-100x for tumor)
-  - Better for CNV calling, structural variant detection, and MSI analysis
-  - Suitable for comprehensive variant discovery including non-coding variants
-  
-- **WES (Whole Exome Sequencing)**: 
-  - Focuses on protein-coding regions (exomes), ~1-2% of genome
-  - Requires target region BED file (exome capture regions)
-  - Higher mean coverage in target regions (100-150x for tumor)
-  - Requires on-target percentage assessment (>80% reads on target)
-  - Better for coding variant detection with higher depth
-  - CNV calling and MSI analysis may have reduced sensitivity
-  - More cost-effective for focused analysis of coding regions
+This document provides comprehensive, step-by-step guidelines for analyzing sequencing data to detect somatic variants, from raw FASTQ files to prioritized variants. The pipeline is designed to work with both **Whole Genome Sequencing (WGS)** and **Whole Exome Sequencing (WES)** data, with specific considerations and parameters for each sequencing type (see table below). The pipeline emphasizes the use of multiple tools at each stage for consensus building and majority voting to improve accuracy and reduce false positives.
 
 **Key Differences in Pipeline Execution**:
 
@@ -57,7 +40,7 @@ graph TB
     Trim --> Align[Stage 3: Alignment<br/>BWA-MEM / DRAGEN-GATK]
     Align --> Process[Stage 4: Post-alignment Processing<br/>UMI Correction, Deduplication, BQSR]
     Process --> QC2[Stage 5: Post-alignment QC<br/>samtools, GATK, Qualimap, Alfred, QC3]
-    QC2 --> Call[Stage 6: Variant Calling<br/>SNV/Indel: Mutect2, Strelka2, VarScan2<br/>SV: Manta, Delly, Lumpy, GRIDSS<br/>CNV: Control-FREEC, ASCAT, DRAGEN-GATK]
+    QC2 --> Call[Stage 6: Variant Calling<br/>SNV/Indel:DRAGEN, DRAGEN-GATK, Mutect2, Strelka2, VarScan2<br/>SV: Manta, Delly, Lumpy, GRIDSS<br/>CNV: Control-FREEC, ASCAT, DRAGEN-GATK]
     Call --> Consensus[Stage 7: Consensus Variant Calling<br/>bcftools, SURVIVOR]
     Consensus --> QC3[Stage 8: Variant QC<br/>bcftools stats, GATK VariantEval, QC3]
     QC3 --> Purity[Stage 9: Tumor Purity Estimation<br/>ABSOLUTE, TPES]
@@ -105,13 +88,14 @@ graph TB
         VC --> VC1[Mutect2]
         VC --> VC2[Strelka2]
         VC --> VC3[VarScan2]
-        VC --> VC4[Manta SV]
-        VC --> VC5[Delly SV]
-        VC --> VC6[Lumpy SV]
-        VC --> VC7[GRIDSS SV]
-        VC --> VC8[Control-FREEC CNV]
-        VC --> VC9[ASCAT CNV]
-        VC --> VC10[DRAGEN-GATK CNV]
+        VC --> VC4[DRAGEN]
+        VC --> VC5[Manta SV]
+        VC --> VC6[Delly SV]
+        VC --> VC7[Lumpy SV]
+        VC --> VC8[GRIDSS SV]
+        VC --> VC9[Control-FREEC CNV]
+        VC --> VC10[ASCAT CNV]
+        VC --> VC11[DRAGEN-GATK CNV]
         VC1 --> Consensus[Stage 7: Consensus]
         VC2 --> Consensus
         VC3 --> Consensus
@@ -122,6 +106,7 @@ graph TB
         VC8 --> Consensus
         VC9 --> Consensus
         VC10 --> Consensus
+        VC11 --> Consensus
     end
     
     subgraph "QC & Biomarker Analysis"
@@ -164,6 +149,7 @@ graph TB
     style VC8 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
     style VC9 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
     style VC10 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
+    style VC11 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
     style VC fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
     style Consensus fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
     style P1 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
@@ -269,7 +255,7 @@ UMIs (Unique Molecular Identifiers) are molecular barcodes used to tag individua
 
 - Accurate duplicate removal (grouping reads from the same original molecule)
 - Error correction (consensus building from UMI families)
-- Improved low VAF variant detection (especially important for ctDNA/early cancer detection)
+- Improved low VAF variant detection (especially important for ctDNA and low-purity tumor samples)
 
 **UMI Location Options**:
 
@@ -421,7 +407,7 @@ sort extracted_umis.txt | uniq | wc -l
 
 **Best Practices**:
 
-- Use GRCh38/hg38 reference genome (latest version)
+- Use GRCh38/hg38 reference genome (latest version, most used) or T2T reference (premature release, incomplete annotation)
 - Include decoy sequences (hs38d1) for better mapping
 - Set appropriate read group information (SM, ID, PL, LB, PU)
 - **Sequencing type considerations**:
@@ -438,7 +424,7 @@ sort extracted_umis.txt | uniq | wc -l
 
 ```bash
 # BWA-MEM alignment
-bwa mem -t 16 \
+bwa mem -t 16 -M \
   -R "@RG\tID:sample\tSM:sample\tPL:ILLUMINA\tLB:lib1\tPU:unit1" \
   reference.fa \
   sample_R1_trimmed.fastq.gz sample_R2_trimmed.fastq.gz \
@@ -779,7 +765,7 @@ gatk ApplyBQSR \
 
 5. **Base Quality**:
 
-   - **Mean base quality**: Should be >30 (Phred score)
+   - **Mean base quality**: Should be >40 (Phred score)
    - **Base quality distribution**: Check for quality degradation
 
 6. **GC Bias**:
@@ -1003,7 +989,7 @@ multiqc . \
 
 **SNV/Indel Callers** (use 3-5 for consensus):
 
-1. **DRAGEN-GATK** (if available): Hardware-accelerated, high sensitivity
+1. **DRAGEN** (if available): Hardware-accelerated, high sensitivity
 2. **GATK Mutect2**: Industry standard for tumor-normal pairs
 3. **Strelka2**: High sensitivity, good for indels
 4. **VarScan2**: Good for low-coverage data
@@ -1015,7 +1001,7 @@ multiqc . \
 2. **Delly**: Comprehensive SV detection, good for translocations
 3. **Lumpy**: High sensitivity, good for complex rearrangements
 4. **GRIDSS**: High precision, good for breakpoint resolution
-5. **DRAGEN-GATK** (if available): Integrated SV calling with SNV/indel calling
+5. **DRAGEN** (if available): Integrated SV calling with SNV/indel calling
 
 **CNV Callers** (use 2-3 for consensus):
 
@@ -1044,9 +1030,7 @@ multiqc . \
   - Or use consensus BAM files from fgbio workflow (for error correction)
   - Some callers (e.g., LoFreq, VarDict) can directly use UMI information
   - UMI-processed data enables lower VAF thresholds
-- **Note**: Tumor purity estimation (Stage 9) will be performed after variant calling and consensus
-  - Purity estimates can be used in downstream filtering and prioritization
-  - Some callers (e.g., VarScan2) can accept purity estimates if available
+- **Note**: Tumor purity estimation (Stage 9) will be performed after variant calling and consensus. Purity estimates are used in downstream filtering (Stage 12) and prioritization (Stage 13). Some callers (e.g., VarScan2) can accept purity estimates if available
 - Set appropriate VAF thresholds:
   - **WGS tissue**: 5-10% minimum (adjust for purity)
   - **WES tissue**: 5-10% minimum (adjust for purity; may have higher depth in target regions)
@@ -1268,11 +1252,7 @@ SURVIVOR merge sv_vcf_list.txt \
 
 3. **Variant Allele Frequency (VAF) Distribution**:
 
-   - **VAF distribution**: Should show expected patterns
-     - Clonal variants: VAF peak near tumor purity
-     - Subclonal variants: Lower VAF values
-   - **VAF vs purity**: Check consistency with tumor purity (will be estimated in Stage 9)
-   - **VAF outliers**: Identify suspicious VAF values
+   - **VAF distribution**: Should show expected patterns (clonal variants peak near tumor purity, subclonal variants have lower VAF). Check consistency with tumor purity (estimated in Stage 9). Identify suspicious VAF outliers
 
 4. **Transition/Transversion (Ti/Tv) Ratio**:
 
@@ -1326,7 +1306,7 @@ SURVIVOR merge sv_vcf_list.txt \
   - **QC3**: Detects cross-contamination at variant detection stage
   - **Variant sharing analysis**: Compare variant calls across samples to identify unexpected sharing
 - Compare metrics across callers to identify issues
-- Check VAF distribution for consistency with tumor purity
+- Check VAF distribution for consistency with tumor purity (see Stage 8 for detailed VAF distribution analysis)
 - Validate Ti/Tv ratio (should be ~2.0 for somatic variants)
 - Investigate outliers and unexpected patterns
 - Document QC metrics for reporting
@@ -1379,7 +1359,7 @@ multiqc . \
 - **Ti/Tv ratio**: 1.5-2.5 for somatic variants (target: ~2.0)
 - **Mean variant quality**: ≥20
 - **Consensus rate**: ≥60% of variants called by ≥2 callers
-- **VAF distribution**: Should show peak near tumor purity
+- **VAF distribution**: Should show peak near tumor purity (see Stage 8 for detailed analysis)
 - **Coverage at variants**: Mean depth ≥10-20x
 - **Caller agreement**: High agreement for high-confidence variants
 
@@ -1430,7 +1410,7 @@ multiqc . \
   - High copy-number alterations (TPES may be less reliable)
   - Subclonal heterogeneity
 - Use consensus purity estimate (average or median of both methods)
-- For early cancer detection: Purity estimates help adjust VAF thresholds in downstream filtering
+- Purity estimates are used to adjust VAF thresholds in downstream filtering (Stage 12) and prioritization (Stage 13)
 - Minimum purity requirements: 20-30% for reliable variant detection
 
 **ABSOLUTE Workflow**:
@@ -1515,9 +1495,7 @@ python integrate_purity_estimates.py \
 - **Purity estimate**: Proportion of tumor cells (0.0-1.0)
 - **Ploidy estimate** (from ABSOLUTE): Average number of chromosome copies
 - **Confidence metrics**: Check agreement between methods
-- **Use in downstream analysis**: 
-  - Adjust VAF threshold: expected_VAF = observed_VAF / purity
-  - Filter variants: Keep if observed_VAF >= (min_expected_VAF * purity)
+- **Use in downstream analysis**: Purity estimates are used to adjust VAF thresholds in filtering (Stage 12) and prioritization (Stage 13) - see those sections for details
 
 **Special Considerations**:
 
@@ -1736,6 +1714,11 @@ python integrate_msi_results.py \
 - **Clinical**: COSMIC, ClinVar, OncoKB
 - **Pathogenicity**: CADD, SIFT, PolyPhen-2, AlphaMissense
 - **Drug databases**: OncoKB, CIViC, DrugBank
+- **Regulatory annotation** (for non-coding variants):
+  - **ENCODE cis regulatory elements**: ENCODE cCREs (candidate cis-Regulatory Elements), ENCODE ChIP-seq data
+  - **Transcription factor binding**: JASPAR, TRANSFAC, ENCODE ChIP-seq, motif databases
+  - **Chromatin states**: ENCODE ChromHMM/Segway segmentation, Roadmap Epigenomics chromatin states
+  - **Regulatory annotation tools**: RegulomeDB, HaploReg, VEP regulatory plugins, motifbreakR
 
 **Structural Variant Annotation Sources**:
 
@@ -1752,6 +1735,10 @@ python integrate_msi_results.py \
 - Add pathogenicity scores (CADD, AlphaMissense) for SNV/indels
 - Annotate with OncoKB for actionability
 - **For SVs**: Use specialized SV annotation tools (AnnotSV) for comprehensive SV annotation
+- **For non-coding variants**: Annotate with regulatory information (ENCODE cCREs, TF binding motifs, chromatin states) for prioritization
+  - Use VEP regulatory plugins or custom annotation with ENCODE/Roadmap data
+  - Consider tissue/cell-type specific chromatin states when available
+  - Integrate multiple regulatory annotation sources for comprehensive assessment
 - Use GRCh38/hg38 coordinates consistently
 - **SV-specific**: Annotate gene fusions, disrupted genes, regulatory regions
 
@@ -1781,6 +1768,41 @@ AnnotSV -SVfile consensus_sv.somatic.vcf.gz \
   -genomeBuild GRCh38 \
   -outputDir sv_annotation/ \
   -txFile /path/to/transcripts.txt
+
+# Non-coding variant annotation with regulatory information
+# Option 1: VEP with regulatory plugins
+vep -i non_coding_variants.vcf.gz \
+  -o non_coding_variants.annotated.vcf \
+  --cache --dir_cache /path/to/vep_cache \
+  --assembly GRCh38 --format vcf --vcf \
+  --custom /path/to/encode_ccres.bed.gz,ENCODE_cCRE,bed,overlap,0 \
+  --custom /path/to/chromatin_states.bed.gz,ChromatinState,bed,overlap,0 \
+  --plugin RegulatoryFeature \
+  --plugin MotifFeature
+
+# Option 2: Annotate with RegulomeDB (web-based or API)
+# Use RegulomeDB API or web interface to annotate variants
+# RegulomeDB provides comprehensive regulatory annotation including:
+# - ENCODE regulatory elements
+# - TF binding sites
+# - Chromatin states
+# - eQTL evidence
+
+# Option 3: Custom annotation with bedtools (for ENCODE cCREs and chromatin states)
+# Annotate variants overlapping ENCODE cis regulatory elements
+bedtools intersect -a non_coding_variants.vcf \
+  -b encode_ccres.bed \
+  -wa -wb > variants_in_ccres.txt
+
+# Annotate variants overlapping active chromatin states
+bedtools intersect -a non_coding_variants.vcf \
+  -b chromatin_states_active.bed \
+  -wa -wb > variants_in_active_chromatin.txt
+
+# Option 4: Motif disruption analysis (using motifbreakR or FIMO)
+# motifbreakR: Predicts disruption of TF binding motifs
+# FIMO: Find Individual Motif Occurrences (from MEME suite)
+# These tools can identify variants that disrupt TF binding sites
 ```
 
 ### Stage 12: Variant Filtering
@@ -1844,10 +1866,8 @@ AnnotSV -SVfile consensus_sv.somatic.vcf.gz \
 **Best Practices**:
 
 - Apply filters progressively (technical → biological → clinical)
-- **Account for tumor purity** (from Stage 9):
-  - Adjust VAF filters: expected_VAF = observed_VAF / purity
-  - Filter variants with VAF inconsistent with purity estimate
-  - Example: If purity is 0.3 and observed VAF is 1%, expected VAF = 3.3% (may be subclonal)
+- **Account for tumor purity** (from Stage 9): Adjust VAF filters using expected_VAF = observed_VAF / purity. Filter variants with VAF inconsistent with purity estimate (see Stage 9 for details)
+- **Do not automatically exclude synonymous variants**: Retain for codon usage analysis in prioritization stage (see Stage 13, Criterion #16)
 - Keep track of filter reasons for each variant
 - For ctDNA: Relax some filters but increase depth requirements
 - Don't over-filter: May remove true low-VAF variants
@@ -1892,7 +1912,7 @@ bcftools isec -C consensus_sv.rare.vcf.gz normal_sv.vcf.gz \
 
    - HIGH: Stop gained, frameshift, splice site
    - MODERATE: Missense with high pathogenicity scores
-   - LOW: Synonymous (usually exclude)
+   - LOW: Synonymous (can be functional - see Criterion #16 for codon usage analysis)
    - **For SVs**: Gene disruptions, gene fusions, regulatory region disruptions
 
 2. **Cancer Gene Lists**:
@@ -1921,11 +1941,257 @@ bcftools isec -C consensus_sv.rare.vcf.gz normal_sv.vcf.gz \
 5. **Variant Allele Frequency**:
 
    - Higher VAF in tumor (if available)
-   - **Consistent with tumor purity** (from Stage 9):
-     - Calculate expected VAF: expected_VAF = observed_VAF / purity
-     - Prioritize variants with VAF consistent with clonal status
-     - Subclonal variants (VAF < purity) may still be important
+   - **Consistent with tumor purity** (from Stage 9): Calculate expected VAF using expected_VAF = observed_VAF / purity. Prioritize variants with VAF consistent with clonal status. Subclonal variants (VAF < purity) may still be important
    - **For SVs**: Consider SV allele frequency and read support
+
+6. **Non-coding Variant Prioritization** (for variants in non-coding regions):
+
+   - **ENCODE cis regulatory Elements**:
+     - Prioritize variants overlapping ENCODE cis regulatory elements (promoters, enhancers, insulators)
+     - cis regulatory elements are critical for gene expression regulation
+     - Use ENCODE annotation tracks (e.g., ENCODE cCREs - candidate cis-Regulatory Elements)
+     - Variants in core promoters and strong enhancers are higher priority
+   - **Transcription Factor Binding Motif Overlap**:
+     - Prioritize variants that overlap with transcription factor (TF) binding motifs
+     - Variants disrupting TF binding sites can affect gene expression
+     - Use TF binding motif databases (e.g., JASPAR, TRANSFAC)
+     - Consider motif disruption scores (e.g., motifbreakR, FIMO)
+     - Higher priority for variants in motifs of cancer-relevant TFs (e.g., p53, MYC, E2F)
+   - **Chromatin State Maps**:
+     - Prioritize variants in active regulatory chromatin states
+     - Use chromatin state segmentation (e.g., ChromHMM, Segway) from ENCODE or Roadmap Epigenomics
+     - Active promoter states (TssA, TssAFlnk): Highest priority
+     - Active enhancer states (EnhA, EnhAF): High priority
+     - Weak/poised enhancers (EnhW, EnhP): Moderate priority
+     - Repressed/inactive states: Lower priority
+     - Consider tissue/cell-type specific chromatin states when available
+   - **Integration Strategy**:
+     - Highest priority: Variants overlapping cis regulatory elements AND TF motifs AND active chromatin states
+     - High priority: Variants in any two of the above categories
+     - Moderate priority: Variants in any one category
+     - Use functional annotation tools (e.g., VEP with regulatory plugins, RegulomeDB, HaploReg) for comprehensive annotation
+
+7. **Multiomics Data Integration** (for enhanced variant prioritization):
+
+   - **Transcriptomics (RNA-seq) Integration**:
+     - **Expression Quantitative Trait Loci (eQTLs)**: Prioritize variants associated with gene expression changes
+       - Use eQTL databases (GTEx, eQTLGen, TCGA) to identify variants affecting expression
+       - Variants affecting expression of cancer genes are higher priority
+       - Consider tissue/cell-type specific eQTLs when available
+     - **Splicing Quantitative Trait Loci (sQTLs)**: Prioritize variants affecting alternative splicing
+       - Variants disrupting splice sites or affecting splicing regulation
+       - Use sQTL databases and splicing prediction tools
+     - **Expression correlation**: If RNA-seq data available for the same sample
+       - Prioritize variants in genes with differential expression
+       - Variants in upregulated oncogenes or downregulated tumor suppressors
+       - Consider allele-specific expression (ASE) for heterozygous variants
+   - **Epigenomics Integration**:
+     - **DNA Methylation**: Prioritize variants in differentially methylated regions (DMRs)
+       - Variants affecting CpG sites or methylation-sensitive regulatory regions
+       - Integration with methylation data from same sample or reference datasets
+     - **Chromatin Accessibility (ATAC-seq)**: Prioritize variants in accessible chromatin regions
+       - Variants in open chromatin regions are more likely to be functional
+       - Tissue/cell-type specific accessibility data improves prioritization
+     - **Histone Modifications**: Prioritize variants in regions with active histone marks
+       - H3K27ac (active enhancers), H3K4me3 (active promoters), H3K4me1 (enhancers)
+       - Use ENCODE or Roadmap Epigenomics histone modification tracks
+   - **Proteomics Integration** (when available):
+     - Prioritize variants affecting protein expression or function
+     - Variants in genes with altered protein levels in cancer
+     - Consider post-translational modification sites
+   - **Single-cell Multiomics** (when available):
+     - Prioritize variants with cell-type specific effects
+     - Integration with single-cell RNA-seq, ATAC-seq, or multiome data
+     - Identify variants affecting specific cell populations (e.g., cancer stem cells)
+   - **Integration Strategy**:
+     - Highest priority: Variants with multiomics evidence from multiple data types (e.g., eQTL + chromatin accessibility + expression change)
+     - High priority: Variants with evidence from 2+ omics layers
+     - Moderate priority: Variants with evidence from one omics layer
+     - Use multiomics databases and tools (e.g., OpenTargets, RegulomeDB, GTEx Portal)
+     - Consider concordance across omics layers for stronger evidence
+
+8. **Machine Learning and AI-Based Prioritization Tools**:
+
+   - **Advanced Pathogenicity Prediction**:
+     - **REVEL**: Ensemble method combining multiple scores (high accuracy for missense variants)
+     - **PrimateAI**: Deep learning model trained on primate genomes (good for rare variants)
+     - **DANN**: Deep learning-based functional annotation
+     - **MetaLR/MetaSVM**: Meta-predictors combining multiple tools
+     - **MutPred2**: Predicts molecular consequences of missense mutations
+     - **EVE (Evolutionary model of Variant Effect)**: Unsupervised model based on evolutionary patterns
+   - **Splicing Impact Prediction**:
+     - **SpliceAI**: Deep learning model for splice site prediction
+     - **MMSplice**: Predicts splicing changes from sequence
+     - **SpliceSiteFinder-like**: Multiple splice site prediction tools
+   - **Protein Structure Impact**:
+     - **AlphaFold2 integration**: Consider variants affecting protein structure
+     - **FoldX**: Predicts stability changes from mutations
+     - **DynaMut**: Predicts protein dynamics changes
+   - **Integration Strategy**:
+     - Use ensemble of ML tools for consensus prediction
+     - Prioritize variants with high scores across multiple ML predictors
+     - Consider ML predictions alongside traditional pathogenicity scores
+
+9. **Pathway and Network Analysis**:
+
+   - **Pathway Enrichment**:
+     - Prioritize variants in genes enriched in cancer pathways (e.g., TP53, PI3K/AKT, MAPK, DNA repair)
+     - Use pathway databases: KEGG, Reactome, MSigDB, Pathway Commons
+     - Consider pathway crosstalk and interactions
+   - **Protein-Protein Interaction Networks**:
+     - Prioritize variants in hub genes (highly connected in PPI networks)
+     - Variants affecting protein-protein interactions
+     - Use PPI databases: STRING, BioGRID, IntAct
+   - **Gene Co-expression Networks**:
+     - Prioritize variants in co-expressed gene modules
+     - Variants affecting genes in cancer-specific co-expression modules
+   - **Tools**: GSEA, Enrichr, DAVID, Cytoscape, ReactomePA
+
+10. **Variant Co-occurrence and Mutual Exclusivity**:
+
+    - **Co-occurring Mutations**:
+      - Prioritize variants that co-occur with known driver mutations
+      - Use mutation co-occurrence databases (e.g., cBioPortal, TCGA)
+      - Variants in genes that frequently co-mutate with known drivers
+    - **Mutually Exclusive Mutations**:
+      - Prioritize variants in genes with mutually exclusive mutation patterns (alternative pathways)
+      - Examples: KRAS/BRAF (mutually exclusive), TP53/MDM2
+    - **Mutation Signatures**:
+      - Prioritize variants consistent with known mutational signatures (e.g., APOBEC, UV, smoking)
+      - Use COSMIC mutational signatures
+      - Variants matching cancer-specific mutational patterns
+
+11. **Tumor Evolution and Clonality**:
+
+    - **Clonal vs Subclonal Variants**:
+      - Prioritize clonal variants (present in all tumor cells) as likely drivers
+      - Use tools: PyClone, SciClone, PhyloWGS, Canopy
+      - Consider variant allele frequency relative to tumor purity
+    - **Tumor Evolution Patterns**:
+      - Prioritize variants in trunk (early) vs branch (late) mutations
+      - Trunk mutations are more likely to be drivers
+      - Use phylogenetic reconstruction tools
+    - **Selection Pressure**:
+      - Prioritize variants under positive selection (dN/dS analysis)
+      - Variants in genes with high mutation rates relative to background
+
+12. **3D Genome Structure and Long-Range Interactions**:
+
+    - **Chromatin Interactions**:
+      - Prioritize variants affecting enhancer-promoter loops
+      - Use Hi-C, ChIA-PET, or Capture-C data
+      - Variants disrupting topologically associating domains (TADs)
+    - **Long-Range Regulatory Effects**:
+      - Prioritize variants in regions with long-range chromatin interactions
+      - Variants affecting CTCF binding sites (important for loop formation)
+      - Use 4D Nucleome (4DN) data or ENCODE interaction data
+    - **Tools**: Juicebox, HiCExplorer, FitHiC, CHiCAGO
+
+13. **Drug Resistance and Sensitivity Mutations**:
+
+    - **Resistance Mutations**:
+      - Prioritize known resistance mutations (e.g., EGFR T790M, BRAF V600E resistance)
+      - Use databases: OncoKB, CIViC, DrugBank, PharmGKB
+      - Variants conferring resistance to standard therapies
+    - **Sensitivity Mutations**:
+      - Prioritize variants predicting drug sensitivity
+      - Variants in genes with targeted therapies available
+      - Consider companion diagnostic mutations
+    - **Pharmacogenomics**:
+      - Variants affecting drug metabolism (CYP450 variants)
+      - Variants affecting drug transporters
+
+14. **Population and Ancestry Considerations**:
+
+    - **Ancestry-Specific Allele Frequencies**:
+      - Use ancestry-matched population frequency databases
+      - gnomAD provides ancestry-specific frequencies
+      - Consider population-specific variant interpretation
+    - **Rare Variant Prioritization**:
+      - Prioritize variants rare across all populations
+      - Consider founder mutations in specific populations
+    - **Tools**: gnomAD (ancestry-specific), ALFA (Allele Frequency Aggregator), ExAC
+
+15. **Functional Validation Predictions**:
+
+    - **Experimental Evidence**:
+      - Prioritize variants with experimental validation (functional studies)
+      - Use databases: ClinVar (with functional evidence), UniProt (experimental evidence)
+    - **Model Organism Evidence**:
+      - Variants with orthologous mutations in model organisms
+      - Use databases: MGI, ZFIN, FlyBase
+    - **In Silico Validation Scores**:
+      - Tools predicting experimental validation likelihood
+      - Integration of multiple evidence types
+
+16. **Synonymous Variant Analysis (Codon Usage Impact)**:
+
+    - **Codon Usage Bias and Expression Changes**:
+      - **Do not automatically exclude synonymous variants**: Synonymous variants can cause cancer through expression changes when codon usage is dramatically changed
+      - Codon usage bias affects multiple biological processes:
+        - **mRNA stability**: Rare codons can reduce mRNA stability, leading to decreased expression
+        - **Translation efficiency**: Codon usage affects translation speed and efficiency
+        - **Protein folding**: Altered translation kinetics can affect co-translational protein folding
+        - **Gene expression levels**: Dramatic codon usage changes can significantly alter gene expression
+    - **Prioritization Criteria for Synonymous Variants**:
+      - **Codon Usage Frequency Change**: Prioritize synonymous variants that change from common to rare codons (or vice versa)
+        - **How to calculate CUF change**:
+          1. **Obtain codon usage frequencies**: Download species-specific codon usage tables from Codon Usage Database (CUTG) or Kazusa Codon Usage Database
+          2. **Identify the codon change**: For a synonymous variant, determine the original codon and the new codon (e.g., TTC → TTT, both encode Phe)
+          3. **Look up frequencies**: Find the relative frequency of each codon in the reference table (normalized to 0-1 scale, where 1.0 = most common codon for that amino acid)
+          4. **Calculate change**: |CUF_original - CUF_new| = absolute difference between original and new codon frequencies
+          5. **Example**: If TTC (Phe) has CUF = 0.8 and TTT (Phe) has CUF = 0.2, then CUF change = |0.8 - 0.2| = 0.6 (large change)
+        - Prioritize variants with large CUF changes (>0.3-0.5 difference)
+        - **Tools for calculation**:
+          - **CodonW**: Can calculate codon usage statistics from sequences
+          - **Custom Python/R scripts**: Parse codon usage tables and calculate changes for variants
+          - **VEP plugins**: Some VEP plugins can annotate codon usage changes
+          - **Codon usage databases**: Codon Usage Database (CUTG), Kazusa Codon Usage Database provide pre-calculated frequencies
+      - **Codon Optimality**: Prioritize variants affecting codon optimality
+        - Rare codons (low tRNA abundance) → slower translation → potential expression changes
+        - Common codons (high tRNA abundance) → faster translation
+        - Use tRNA abundance data when available
+      - **mRNA Stability Impact**: Prioritize variants predicted to affect mRNA stability
+        - Rare codons may reduce mRNA stability
+        - Use tools: RNAfold, mfold, or codon usage-based stability predictors
+      - **Cancer Gene Context**: Higher priority for synonymous variants in cancer genes
+        - Synonymous variants in oncogenes or tumor suppressors with codon usage changes
+        - Variants in genes with known expression-dependent cancer phenotypes
+    - **Tools and Databases**:
+      - **Codon Usage Databases**: Codon Usage Database (CUTG), Kazusa Codon Usage Database
+      - **Analysis Tools**: 
+        - **CodonW**: Codon usage analysis
+        - **CAI (Codon Adaptation Index)**: Measures codon usage bias
+        - **tAI (tRNA Adaptation Index)**: Considers tRNA abundance
+        - **Custom scripts**: Calculate codon frequency changes
+      - **Example Calculation Script** (Python pseudo-code):
+        ```python
+        # Load codon usage table (from CUTG or Kazusa database)
+        codon_freq = {
+            'TTC': 0.8,  # Phe - common codon
+            'TTT': 0.2,  # Phe - rare codon
+            'GAA': 0.9,  # Glu - common codon
+            'GAG': 0.1,  # Glu - rare codon
+            # ... more codons
+        }
+        
+        def calculate_cuf_change(ref_codon, alt_codon, codon_freq_table):
+            """Calculate codon usage frequency change for synonymous variant"""
+            ref_freq = codon_freq_table.get(ref_codon, 0.0)
+            alt_freq = codon_freq_table.get(alt_codon, 0.0)
+            cuf_change = abs(ref_freq - alt_freq)
+            return cuf_change
+        
+        # Example: Synonymous variant TTC > TTT (both encode Phe)
+        cuf_change = calculate_cuf_change('TTC', 'TTT', codon_freq)
+        # Result: |0.8 - 0.2| = 0.6 (large change, high priority)
+        ```
+      - **Expression Correlation**: If RNA-seq data available, check for expression changes associated with synonymous variants
+    - **Integration Strategy**:
+      - Highest priority: Synonymous variants in cancer genes with large codon usage changes (>0.4) AND expression evidence
+      - High priority: Synonymous variants in cancer genes with large codon usage changes (>0.4)
+      - Moderate priority: Synonymous variants with moderate codon usage changes (>0.2) in cancer genes
+      - Lower priority: Synonymous variants with small codon usage changes (<0.2) or in non-cancer genes
 
 **Prioritization Tiers**:
 
@@ -1934,19 +2200,52 @@ bcftools isec -C consensus_sv.rare.vcf.gz normal_sv.vcf.gz \
   - SVs: Known gene fusions (e.g., BCR-ABL), disruptions of Tier 1 cancer genes
 - **Tier 2**: Moderate-impact variants with high pathogenicity scores
   - SNV/indels: Missense with high pathogenicity scores in cancer genes
+  - **Synonymous variants with large codon usage changes**: Synonymous variants in cancer genes with dramatic codon usage changes (>0.4) and expression evidence
   - SVs: Disruptions of cancer-associated genes, novel gene fusions
 - **Tier 3**: Variants of unknown significance (VUS)
   - SNV/indels: Variants with uncertain functional impact
+  - **Synonymous variants with codon usage changes**: Synonymous variants in cancer genes with moderate to large codon usage changes (>0.2-0.4), or synonymous variants with large codon usage changes in non-cancer genes
   - SVs: SVs in non-coding regions or genes of uncertain significance
+  - **Non-coding variants**: Variants in non-coding regions that overlap with ENCODE cis regulatory elements, TF binding motifs, or active chromatin states (prioritize based on regulatory annotation strength)
+  - **Multiomics-supported variants**: Variants with supporting evidence from transcriptomics, epigenomics, or other omics data (prioritize based on strength and concordance of multiomics evidence)
+  - **ML-predicted pathogenic variants**: Variants with high scores from multiple ML predictors (REVEL, PrimateAI, etc.) but lacking clinical evidence
+  - **Pathway/network-enriched variants**: Variants in genes enriched in cancer pathways or PPI networks
+  - **Clonal variants**: Variants present in all tumor cells (likely early drivers)
 - **Tier 4**: Likely benign (exclude from reporting)
-  - Common variants, synonymous variants, benign SVs
+  - Common variants, synonymous variants with minimal codon usage changes (<0.2) in non-cancer genes, benign SVs
 
 **Best Practices**:
 
 - Use scoring system combining multiple criteria
 - Prioritize variants with therapeutic implications
 - Consider tumor type-specific gene lists
-- Document prioritization rationale
+- **Integrate multiomics data when available**: Multiomics evidence strengthens variant prioritization, especially for non-coding variants
+  - Use public multiomics databases (GTEx, TCGA, ENCODE) for reference data
+  - Integrate sample-specific multiomics data (RNA-seq, ATAC-seq, methylation) when available
+  - Prioritize variants with concordant evidence across multiple omics layers
+- **Use ensemble of ML predictors**: Combine multiple ML-based pathogenicity predictors (REVEL, PrimateAI, DANN) for consensus
+  - Prioritize variants with high scores across multiple ML tools
+  - ML tools are particularly useful for rare variants and missense mutations
+- **Consider pathway and network context**: Prioritize variants in cancer pathways and highly connected network nodes
+  - Use pathway enrichment analysis to identify pathway-relevant variants
+  - Consider protein-protein interaction networks for hub genes
+- **Analyze clonality and tumor evolution**: Prioritize clonal (trunk) variants as likely drivers
+  - Use clonality analysis tools (PyClone, SciClone) to identify clonal vs subclonal variants
+  - Consider phylogenetic patterns in variant prioritization
+- **Check for co-occurrence patterns**: Prioritize variants that co-occur with known drivers or show mutual exclusivity
+  - Use mutation co-occurrence databases (cBioPortal, TCGA)
+  - Consider mutational signatures consistent with cancer type
+- **Account for population ancestry**: Use ancestry-matched population frequencies for accurate rare variant identification
+  - gnomAD provides ancestry-specific allele frequencies
+  - Consider population-specific variant interpretation
+- **Integrate 3D genome structure**: For non-coding variants, consider chromatin interactions and TAD boundaries
+  - Use Hi-C or ChIA-PET data when available
+  - Prioritize variants affecting enhancer-promoter loops
+- **Check drug resistance/sensitivity**: Prioritize variants with known therapeutic implications
+  - Use OncoKB, CIViC for drug-gene associations
+  - Consider resistance mutations for treatment planning
+- **Analyze synonymous variants for codon usage changes** (see Criterion #16 for details)
+- Document prioritization rationale, including all evidence types used (multiomics, ML predictions, pathway analysis, codon usage changes, etc.)
 
 **Example Prioritization Script Logic**:
 
@@ -1969,6 +2268,106 @@ def prioritize_variant(variant):
     
     # Clinical (0-10 points)
     if variant.oncokb_level in [1,2,3]: score += 10
+    
+    # Non-coding regulatory annotation (0-25 points)
+    if variant.is_non_coding:
+        # ENCODE cis regulatory elements (0-10 points)
+        if variant.overlaps_encode_core_regulatory: score += 10
+        elif variant.overlaps_encode_regulatory: score += 5
+        
+        # TF binding motif overlap (0-8 points)
+        if variant.disrupts_cancer_tf_motif: score += 8
+        elif variant.overlaps_tf_motif: score += 4
+        
+        # Chromatin state (0-7 points)
+        if variant.in_active_promoter_state: score += 7
+        elif variant.in_active_enhancer_state: score += 5
+        elif variant.in_weak_enhancer_state: score += 3
+    
+    # Multiomics integration (0-30 points)
+    multiomics_count = 0
+    
+    # Transcriptomics evidence (0-12 points)
+    if variant.is_eqtl_cancer_gene: score += 12; multiomics_count += 1
+    elif variant.is_eqtl: score += 6; multiomics_count += 1
+    if variant.is_sqtl: score += 4; multiomics_count += 1
+    if variant.affects_expression_sample: score += 5; multiomics_count += 1
+    
+    # Epigenomics evidence (0-10 points)
+    if variant.in_differentially_methylated_region: score += 5; multiomics_count += 1
+    if variant.in_accessible_chromatin: score += 5; multiomics_count += 1
+    if variant.in_active_histone_region: score += 3; multiomics_count += 1
+    
+    # Proteomics evidence (0-5 points, when available)
+    if variant.affects_protein_expression: score += 5; multiomics_count += 1
+    
+    # Bonus for multiomics concordance (0-3 points)
+    if multiomics_count >= 3: score += 3
+    elif multiomics_count == 2: score += 1
+    
+    # ML-based pathogenicity prediction (0-15 points)
+    ml_score_count = 0
+    if variant.revel > 0.7: score += 8; ml_score_count += 1
+    elif variant.revel > 0.5: score += 4; ml_score_count += 1
+    if variant.primateai > 0.8: score += 7; ml_score_count += 1
+    elif variant.primateai > 0.6: score += 3; ml_score_count += 1
+    if variant.dann > 0.9: score += 5; ml_score_count += 1
+    # Bonus for multiple ML tool agreement
+    if ml_score_count >= 2: score += 3
+    
+    # Pathway and network analysis (0-12 points)
+    if variant.gene in CANCER_PATHWAYS: score += 8
+    if variant.gene in PPI_HUB_GENES: score += 6
+    if variant.in_coexpressed_module: score += 4
+    
+    # Variant co-occurrence (0-8 points)
+    if variant.co_occurs_with_driver: score += 8
+    elif variant.mutually_exclusive_with_driver: score += 5
+    if variant.matches_mutational_signature: score += 3
+    
+    # Clonality and tumor evolution (0-10 points)
+    if variant.is_clonal: score += 10
+    elif variant.is_subclonal: score += 5
+    if variant.is_trunk_mutation: score += 8
+    if variant.under_positive_selection: score += 5
+    
+    # 3D genome structure (0-8 points, for non-coding variants)
+    if variant.affects_chromatin_loop: score += 8
+    if variant.disrupts_tad_boundary: score += 5
+    if variant.affects_ctcf_site: score += 4
+    
+    # Drug resistance/sensitivity (0-10 points)
+    if variant.is_resistance_mutation: score += 10
+    if variant.is_sensitivity_mutation: score += 8
+    if variant.affects_drug_metabolism: score += 5
+    
+    # Population and ancestry (0-5 points)
+    if variant.is_rare_all_populations: score += 5
+    elif variant.is_rare_ancestry_matched: score += 3
+    
+    # Functional validation evidence (0-8 points)
+    if variant.has_experimental_validation: score += 8
+    if variant.has_model_organism_evidence: score += 5
+    
+    # Synonymous variant codon usage analysis (0-15 points)
+    if variant.is_synonymous:
+        # Codon usage frequency change (0-10 points)
+        if variant.codon_usage_change > 0.4:
+            if variant.gene in CANCER_GENES:
+                score += 10  # Large change in cancer gene
+            else:
+                score += 6   # Large change in non-cancer gene
+        elif variant.codon_usage_change > 0.2:
+            if variant.gene in CANCER_GENES:
+                score += 6   # Moderate change in cancer gene
+            else:
+                score += 3   # Moderate change in non-cancer gene
+        
+        # Expression evidence (0-5 points, when available)
+        if variant.affects_expression_sample and variant.codon_usage_change > 0.2:
+            score += 5  # Expression change + codon usage change
+        elif variant.affects_expression_sample:
+            score += 2  # Expression change without large codon usage change
     
     return score
 ```
@@ -1996,7 +2395,7 @@ def prioritize_variant(variant):
 - **Variant metrics**: 
   - Ti/Tv ratio (~2.0 for somatic), VAF distribution
   - SV metrics: Number of SVs by type (DEL, DUP, INV, TRA), size distribution
-- **VAF vs Purity**: Check that VAF distribution is consistent with purity estimate
+- **VAF vs Purity**: Check that VAF distribution is consistent with purity estimate (see Stage 8 for VAF distribution analysis)
 - **TMB correlation**: If MSI-H, verify high TMB (tumor mutational burden)
 - **Caller agreement**: Percentage of variants called by multiple callers
 - **Annotation completeness**: Percentage of variants with full annotation
@@ -2018,8 +2417,10 @@ def prioritize_variant(variant):
   - **MSI status**: Consensus MSI classification and supporting evidence
   - Prioritized variant list with annotations (SNV/indels and SVs)
   - Filtering statistics (separate for SNV/indels and SVs)
-  - **Clinical biomarkers**: MSI status, TMB (if calculated), actionable variants
+  - **Clinical biomarkers**: TMB (if calculated), actionable variants
   - **Structural variants**: Summary of gene fusions, disrupted genes, known pathogenic SVs
+  - **Multiomics evidence**: Include multiomics supporting evidence for prioritized variants (eQTLs, chromatin accessibility, expression changes) when available
+  - **Prioritization evidence summary**: Document all evidence types used (ML predictions, pathway analysis, clonality, co-occurrence patterns, 3D genome structure, etc.)
   - Recommendations for validation (including PCR or long-read sequencing for SVs)
 
 ## Pipeline Integration and Automation
@@ -2042,7 +2443,7 @@ def prioritize_variant(variant):
 - Fail fast on QC failures
 - Generate intermediate QC reports
 
-## Special Considerations for Early Cancer Detection
+## Special Considerations for Somatic Variant Analysis
 
 ### Low VAF Detection (ctDNA)
 
@@ -2058,16 +2459,9 @@ def prioritize_variant(variant):
 
 ### Tumor Purity
 
-- **Estimate tumor purity using multiple methods** (Stage 9):
-  - ABSOLUTE: Copy-number alteration-based estimation
-  - TPES: SNV-based estimation
-  - Use consensus estimate from both methods
-- **Integrate purity estimates throughout pipeline**:
-  - Purity estimation performed after variant calling (Stage 9)
-  - Account for purity in variant filtering (Stage 12)
-  - Consider purity in variant prioritization (Stage 13)
-- Minimum purity: 20-30% for reliable variant detection
-- For low purity samples: Increase sequencing depth or use specialized methods
+- **Estimate tumor purity using multiple methods** (see Stage 9 for details): Use both ABSOLUTE and TPES, then use consensus estimate
+- **Integrate purity estimates throughout pipeline**: Purity estimates from Stage 9 are used in variant filtering (Stage 12) and prioritization (Stage 13)
+- Minimum purity: 20-30% for reliable variant detection. For low purity samples: Increase sequencing depth or use specialized methods
 
 ### Serial Monitoring
 
@@ -2091,6 +2485,15 @@ def prioritize_variant(variant):
 - **Variant QC**: bcftools stats, GATK VariantEval, vcf-stats, **DRAGEN Cross-Sample Contamination** (variant-level contamination), **ContEst/GATK** (contamination from variants), QC3 (variant detection stage, batch effect detection, cross-contamination), MultiQC
 - **MSI Analysis**: MANTIS, MSIsensor, MSIseq, MSMuTect
 - Annotation: VEP, SnpEff, Annovar, AnnotSV (for structural variants)
+- **Multiomics Integration**: GTEx Portal (eQTLs), eQTLGen, RegulomeDB, OpenTargets, motifbreakR, FIMO, bedtools (for multiomics annotation)
+- **ML-based Pathogenicity Prediction**: REVEL, PrimateAI, DANN, MetaLR, MetaSVM, MutPred2, EVE (Evolutionary model of Variant Effect)
+- **Splicing Prediction**: SpliceAI, MMSplice, SpliceSiteFinder-like tools
+- **Protein Structure Impact**: AlphaFold2, FoldX, DynaMut
+- **Pathway/Network Analysis**: GSEA, Enrichr, DAVID, Cytoscape, ReactomePA
+- **Clonality/Tumor Evolution**: PyClone, SciClone, PhyloWGS, Canopy
+- **3D Genome Structure**: Juicebox, HiCExplorer, FitHiC, CHiCAGO
+- **Variant Co-occurrence**: cBioPortal (mutation co-occurrence analysis)
+- **Codon Usage Analysis**: CodonW (codon usage analysis), CAI (Codon Adaptation Index calculator), tAI (tRNA Adaptation Index), custom scripts for codon frequency change calculation
 - Filtering: bcftools, DRAGEN-GATK, custom scripts
 
 ### Databases
@@ -2101,8 +2504,19 @@ def prioritize_variant(variant):
   - Or use standard exome target files (e.g., Gencode, RefSeq)
   - Ensure BED file matches the capture kit used for sequencing
 - Variants: dbSNP, gnomAD, COSMIC, ClinVar, DGV (Database of Genomic Variants for SVs), gnomAD SV
-- Clinical: OncoKB, CIViC, DrugBank
-- Pathogenicity: CADD, AlphaMissense, dbNSFP
+- Clinical: OncoKB, CIViC, DrugBank, PharmGKB (pharmacogenomics)
+- Pathogenicity: CADD, AlphaMissense, dbNSFP, REVEL, PrimateAI, DANN, MutPred2, EVE
+- **Pathways and Networks**: KEGG, Reactome, MSigDB, Pathway Commons, STRING (protein-protein interactions), BioGRID, IntAct
+- **Mutation Co-occurrence**: cBioPortal (TCGA mutation co-occurrence), COSMIC (mutational signatures)
+- **Model Organisms**: MGI (Mouse Genome Informatics), ZFIN (Zebrafish), FlyBase (Drosophila)
+- **Functional Evidence**: UniProt (experimental evidence), ClinVar (with functional studies)
+- **Codon Usage**: Codon Usage Database (CUTG), Kazusa Codon Usage Database, tRNA abundance databases
+- **Multiomics**:
+  - **Transcriptomics**: GTEx (eQTLs, tissue-specific expression), eQTLGen (eQTL database), TCGA (cancer expression data), sQTL databases
+  - **Epigenomics**: ENCODE (chromatin states, histone modifications, accessibility), Roadmap Epigenomics (chromatin states), TCGA (DNA methylation, histone modifications)
+  - **Regulatory**: ENCODE cCREs (cis regulatory elements), RegulomeDB (regulatory annotation), HaploReg, JASPAR (TF motifs), TRANSFAC (TF motifs)
+  - **3D Genome Structure**: 4D Nucleome (4DN) Project (Hi-C, ChIA-PET data), ENCODE (chromatin interactions)
+  - **Multiomics Integration**: OpenTargets (disease-variant associations with multiomics evidence), GTEx Portal (multiomics browser)
 
 ### Best Practice Guidelines
 

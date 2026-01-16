@@ -6,6 +6,7 @@ categories: [bioinformatics, nextflow, workflows]
 tags: [nextflow, modules, testing, nf-test, bioinformatics, workflows, best-practices]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Comprehensive guide to writing nf-test test files for Nextflow modules, covering test structure, patterns, assertions, configuration, and best practices for ensuring module reliability."
 ---
 This document outlines best practices for writing comprehensive nf-test test files for Nextflow modules, covering test structure, patterns, assertions, and configuration.
 

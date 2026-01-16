@@ -6,6 +6,7 @@ categories: [data-visualization, scientific-communication, bioinformatics]
 tags: [ggplot2, matplotlib, inkscape, drawio, biorender, figure-preparation, publication, visualization, r, python, scientific-figures]
 author: Haibo Liu, PhD
 toc: true
+excerpt: "Comprehensive guide to creating publication-ready scientific figures, covering tools, techniques, and best practices for data visualization, figure assembly, annotation, and meeting journal requirements."
 ---
 
 ## Introduction
