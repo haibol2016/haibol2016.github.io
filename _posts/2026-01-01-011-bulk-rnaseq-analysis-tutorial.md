@@ -3,7 +3,7 @@ layout: post
 title: "A Beginner's Guide to Bulk RNA-seq Data Analysis: From Raw Reads to Gene Set Enrichment"
 date: 2026-01-01
 categories: [bioinformatics, rna-seq, genomics, data-analysis]
-tags: [rna-seq, bulk-rna-seq, single-cell-rna-seq, spatial-transcriptomics, fastqc, fastp, adapter-trimming, star, bigwig, coverage-tracks, qorts, rseqc, qualimap, featurecounts, htseq, expression-quantification, contamination-detection, igv, cleanup-rnaseq, deseq2, batch-effect, combat, svaseq, ruv-seq, visualization, heatmap, sankey-diagram, gsea, fgsea, bioinformatics, tutorial]
+tags: [rna-seq, bulk-rna-seq, fastqc, fastp, adapter-trimming, star, bigwig, coverage-tracks, qorts, rseqc, qualimap, featurecounts, htseq, expression-quantification, contamination-detection, igv, cleanup-rnaseq, deseq2, batch-effect, combat, svaseq, ruv-seq, visualization, heatmap, sankey-diagram, gsea, fgsea, bioinformatics, tutorial]
 author: Haibo Liu, PhD
 toc: true
 excerpt: "A beginner's guide to bulk RNA-seq data analysis covering the complete pipeline from raw reads to gene set enrichment, including quality control, alignment, quantification, differential expression, and functional analysis."
@@ -3201,28 +3201,13 @@ Document your analysis thoroughly:
 
 Putting all the steps together into a cohesive analysis pipeline is crucial for reproducible and reliable results.
 
-### Putting It All Together
-
-A complete bulk RNA-seq analysis workflow:
-
-1. **Quality Control**: FastQC on raw reads
-2. **Trimming** (if needed): fastp or similar
-3. **Alignment**: STAR with genome index
-4. **Post-alignment QC**: QoRTs or similar
-5. **Quantification**: featureCounts
-6. **Contamination Check**: Review featureCounts summary, IGV visualization
-7. **Differential Expression**: DESeq2 with batch correction if needed
-8. **Functional Enrichment**: ORA and/or GSEA
-
 ### Best Practices
 
-1. **Document everything**: Keep detailed notes on parameters, versions, and decisions
-2. **Version control**: Track software versions and analysis scripts
-3. **Reproducibility**: Use scripts, not manual steps
-4. **Quality at each step**: Don't proceed if QC fails
-5. **Appropriate controls**: Include positive and negative controls
-6. **Statistical rigor**: Use appropriate multiple testing correction
-7. **Biological validation**: Verify key findings with independent methods
+1. **Document everything**: Keep detailed notes on parameters, versions, and decisions (see Section 9 for detailed reproducibility guidelines)
+2. **Quality at each step**: Don't proceed if QC fails
+3. **Appropriate controls**: Include positive and negative controls
+4. **Statistical rigor**: Use appropriate multiple testing correction
+5. **Biological validation**: Verify key findings with independent methods
 
 ### Common Pitfalls
 
@@ -3262,17 +3247,7 @@ A complete bulk RNA-seq analysis workflow:
 
 ## Conclusion
 
-This tutorial has covered the complete workflow for bulk RNA-seq data analysis, from raw reads to biological interpretation. The key steps include:
-
-1. **Quality control** to ensure data integrity
-2. **Alignment** to map reads to the genome
-3. **Quantification** to count gene expression
-4. **Differential expression analysis** to find significant changes
-5. **Functional enrichment** to understand biological meaning
-
-### Summary of Workflow
-
-- Raw read QC (FastQC) → Adapter trimming (if needed) → Alignment (STAR) → Post-alignment QC (QoRTs) → Quantification (featureCounts) → Contamination detection → Differential expression (DESeq2) → Functional enrichment (ORA/GSEA)
+This tutorial has covered the complete workflow for bulk RNA-seq data analysis, from raw reads to biological interpretation. The workflow overview is provided in the Introduction section. Key takeaways include the importance of quality control at each step, proper experimental design, appropriate statistical methods, and thorough documentation for reproducibility.
 
 ### Next Steps
 

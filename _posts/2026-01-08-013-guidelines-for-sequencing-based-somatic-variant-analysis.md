@@ -29,26 +29,28 @@ This document provides comprehensive, step-by-step guidelines for analyzing sequ
 
 ## Pipeline Architecture
 
-### Workflow Diagram
+### Workflow Overview
 
-The following diagram illustrates the complete pipeline workflow from raw FASTQ files to prioritized variants with high-contrast colors for better visibility:
+The pipeline consists of 14 stages from raw FASTQ files to prioritized variants. The workflow diagram below shows the complete pipeline with parallel processing opportunities:
 
 ```mermaid
 graph TB
-    Start[Raw FASTQ Files] --> QC1[Stage 1: Pre-alignment QC<br/>FastQC, QC3, MultiQC]
-    QC1 --> Trim[Stage 2: Read Trimming & UMI Extraction<br/>fastp]
-    Trim --> Align[Stage 3: Alignment<br/>BWA-MEM / DRAGEN-GATK]
-    Align --> Process[Stage 4: Post-alignment Processing<br/>UMI Correction, Deduplication, BQSR]
-    Process --> QC2[Stage 5: Post-alignment QC<br/>samtools, GATK, Qualimap, Alfred, QC3]
-    QC2 --> Call[Stage 6: Variant Calling<br/>SNV/Indel:DRAGEN, DRAGEN-GATK, Mutect2, Strelka2, VarScan2<br/>SV: Manta, Delly, Lumpy, GRIDSS<br/>CNV: Control-FREEC, ASCAT, DRAGEN-GATK]
-    Call --> Consensus[Stage 7: Consensus Variant Calling<br/>bcftools, SURVIVOR]
-    Consensus --> QC3[Stage 8: Variant QC<br/>bcftools stats, GATK VariantEval, QC3]
-    QC3 --> Purity[Stage 9: Tumor Purity Estimation<br/>ABSOLUTE, TPES]
-    Purity --> MSI[Stage 10: MSI Analysis<br/>MANTIS, MSIsensor, MSIseq]
-    MSI --> Annotate[Stage 11: Variant Annotation<br/>VEP, AnnotSV]
-    Annotate --> Filter[Stage 12: Variant Filtering<br/>Technical, Biological, Clinical filters]
-    Filter --> Prioritize[Stage 13: Variant Prioritization<br/>Tier classification, Scoring]
-    Prioritize --> QC4[Stage 14: Final QC & Validation<br/>Comprehensive QC metrics, Reporting]
+    Start[Raw FASTQ Files] --> QC1[Stage 1: Pre-alignment QC]
+    QC1 --> Trim[Stage 2: Read Trimming & UMI Extraction]
+    Trim --> Align[Stage 3: Alignment]
+    Align --> Process[Stage 4: Post-alignment Processing]
+    Process --> QC2[Stage 5: Post-alignment QC]
+    QC2 --> Call[Stage 6: Variant Calling<br/>Multiple callers in parallel]
+    Call --> Consensus[Stage 7: Consensus Variant Calling]
+    Consensus --> QC3[Stage 8: Variant QC]
+    QC3 --> Purity[Stage 9: Tumor Purity<br/>ABSOLUTE, TPES]
+    QC3 --> MSI[Stage 10: MSI Analysis<br/>MANTIS, MSIsensor, MSIseq]
+    QC3 --> Annotate[Stage 11: Variant Annotation<br/>VEP with AI tools, SNPeffect 5.0]
+    Purity --> Filter[Stage 12: Variant Filtering]
+    MSI --> Filter
+    Annotate --> Filter
+    Filter --> Prioritize[Stage 13: Variant Prioritization]
+    Prioritize --> QC4[Stage 14: Final QC & Validation]
     QC4 --> End[Prioritized Variants Report]
     
     style Start fill:#0066cc,stroke:#003366,stroke-width:3px,color:#ffffff
@@ -69,144 +71,6 @@ graph TB
     style Prioritize fill:#9966cc,stroke:#663399,stroke-width:2px,color:#ffffff
 ```
 
-### Detailed Workflow with Parallel Processing
-
-The following diagram shows parallel processing opportunities and data dependencies with improved color contrast:
-
-```mermaid
-graph TB
-    subgraph "Preprocessing & Alignment"
-        FASTQ[Raw FASTQ Files] --> QC1[Stage 1: Pre-alignment QC]
-        QC1 --> Trim[Stage 2: Trimming & UMI Extraction]
-        Trim --> Align[Stage 3: Alignment]
-        Align --> Process[Stage 4: Post-alignment Processing]
-        Process --> QC2[Stage 5: Post-alignment QC]
-    end
-    
-    subgraph "Variant Calling & Consensus"
-        QC2 --> VC[Stage 6: Variant Calling]
-        VC --> VC1[Mutect2]
-        VC --> VC2[Strelka2]
-        VC --> VC3[VarScan2]
-        VC --> VC4[DRAGEN]
-        VC --> VC5[Manta SV]
-        VC --> VC6[Delly SV]
-        VC --> VC7[Lumpy SV]
-        VC --> VC8[GRIDSS SV]
-        VC --> VC9[Control-FREEC CNV]
-        VC --> VC10[ASCAT CNV]
-        VC --> VC11[DRAGEN-GATK CNV]
-        VC1 --> Consensus[Stage 7: Consensus]
-        VC2 --> Consensus
-        VC3 --> Consensus
-        VC4 --> Consensus
-        VC5 --> Consensus
-        VC6 --> Consensus
-        VC7 --> Consensus
-        VC8 --> Consensus
-        VC9 --> Consensus
-        VC10 --> Consensus
-        VC11 --> Consensus
-    end
-    
-    subgraph "QC & Biomarker Analysis"
-        Consensus --> QC3[Stage 8: Variant QC]
-        QC3 --> Purity[Stage 9: Tumor Purity]
-        QC3 --> MSI[Stage 10: MSI Analysis]
-        Purity --> P1[ABSOLUTE]
-        Purity --> P2[TPES]
-        MSI --> M1[MANTIS]
-        MSI --> M2[MSIsensor]
-        MSI --> M3[MSIseq]
-    end
-    
-    subgraph "Annotation & Prioritization"
-        QC3 --> Annotate[Stage 11: Annotation]
-        P1 --> Filter[Stage 12: Filtering]
-        P2 --> Filter
-        Annotate --> Filter
-        Filter --> Prioritize[Stage 13: Prioritization]
-        M1 --> Prioritize
-        M2 --> Prioritize
-        M3 --> Prioritize
-        Prioritize --> QC4[Stage 14: Final QC]
-        QC4 --> Report[Prioritized Variants Report]
-    end
-    
-    style FASTQ fill:#0066cc,stroke:#003366,stroke-width:3px,color:#ffffff
-    style Report fill:#006600,stroke:#003300,stroke-width:3px,color:#ffffff
-    style QC1 fill:#ffcc00,stroke:#cc9900,stroke-width:2px,color:#000000
-    style QC2 fill:#ffcc00,stroke:#cc9900,stroke-width:2px,color:#000000
-    style QC3 fill:#ffcc00,stroke:#cc9900,stroke-width:2px,color:#000000
-    style QC4 fill:#ffcc00,stroke:#cc9900,stroke-width:2px,color:#000000
-    style VC1 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC2 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC3 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC4 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC5 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC6 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC7 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC8 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC9 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC10 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC11 fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style VC fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style Consensus fill:#0099cc,stroke:#006699,stroke-width:2px,color:#ffffff
-    style P1 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style P2 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style Purity fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style M1 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style M2 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style M3 fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style MSI fill:#cc0066,stroke:#990033,stroke-width:2px,color:#ffffff
-    style Annotate fill:#9966cc,stroke:#663399,stroke-width:2px,color:#ffffff
-    style Filter fill:#9966cc,stroke:#663399,stroke-width:2px,color:#ffffff
-    style Prioritize fill:#9966cc,stroke:#663399,stroke-width:2px,color:#ffffff
-    style Process fill:#6699ff,stroke:#3366cc,stroke-width:2px,color:#ffffff
-    style Trim fill:#6699ff,stroke:#3366cc,stroke-width:2px,color:#ffffff
-    style Align fill:#6699ff,stroke:#3366cc,stroke-width:2px,color:#ffffff
-```
-
-### Data Flow and Dependencies
-
-**Key Data Dependencies**:
-
-- **Stage 4 → Stage 5**: Post-alignment processed BAM files for QC
-- **Stage 5 → Stage 6**: QC-validated BAM files for variant calling
-- **Stage 6 → Stage 7**: Individual caller VCF files for consensus
-- **Stage 7 → Stage 8**: Consensus VCF for variant QC
-- **Stage 6 (CNV) → Stage 9**: CNV data for ABSOLUTE purity estimation
-- **Stage 7 (SNV) → Stage 9**: Consensus SNV calls for TPES purity estimation
-- **Stage 7 → Stage 10**: Consensus variant calls for MSIseq analysis
-- **Stage 9 → Stage 12**: Purity estimates for variant filtering
-- **Stage 9 → Stage 13**: Purity estimates for variant prioritization
-- **Stage 10 → Stage 13**: MSI status for variant prioritization
-
-**Parallel Processing Opportunities**:
-
-- **Stage 6**: Multiple variant callers (SNV/Indel, SV, CNV) can run in parallel
-- **Stage 9**: ABSOLUTE and TPES can run in parallel (independent methods)
-- **Stage 10**: Multiple MSI tools (MANTIS, MSIsensor, MSIseq) can run in parallel
-- **Stage 11**: Multiple annotation tools can run in parallel (if needed)
-- **Overall**: Process multiple samples in parallel where computational resources allow
-
-The complete pipeline consists of the following stages:
-
-1. **Pre-alignment Quality Control** - Assess raw read quality
-2. **Read Trimming and Adapter Removal** - Clean sequencing artifacts
-3. **Alignment to Reference Genome** - Map reads to reference
-4. **Post-alignment Processing** - Optimize alignments for variant calling
-5. **Post-alignment Quality Control** - Assess alignment quality and coverage metrics
-6. **Variant Calling (Multiple Tools)** - Call variants using ensemble of callers
-7. **Consensus Variant Calling** - Integrate results from multiple callers
-8. **Variant Quality Control** - Assess variant calling quality and metrics
-9. **Tumor Purity Estimation** - Estimate tumor purity using ABSOLUTE and TPES (requires CNV and variant data)
-10. **Microsatellite Instability (MSI) Analysis** - Assess MSI status using multiple tools
-11. **Variant Annotation** - Add functional and clinical information
-12. **Variant Filtering** - Remove artifacts and common variants
-13. **Variant Prioritization** - Rank variants by clinical significance
-14. **Quality Control and Validation** - Final QC and reporting
-
 ## Detailed Pipeline Steps
 
 ### Stage 1: Pre-alignment Quality Control
@@ -215,15 +79,13 @@ The complete pipeline consists of the following stages:
 
 **Tools**:
 
-- **FastQC**: Primary QC tool for sequencing data
-- **QC3**: Multi-stage QC tool that performs quality assessment at raw data, alignment, and variant detection stages; detects batch effects and cross-contamination
-- **MultiQC**: Aggregate QC metrics across samples
+- **FastQC**: Primary QC tool for sequencing data quality assessment
+- **MultiQC**: Aggregate QC metrics across samples for comparison
 
 **Best Practices**:
 
-- Run FastQC on all samples before and after trimming
-- **Use QC3 for multi-stage QC**: Provides comprehensive quality assessment across raw data, alignment, and variant detection stages
-- **QC3 batch effect detection**: Run QC3 on all samples together to detect batch effects and cross-contamination
+- Run FastQC on all samples before trimming to assess raw data quality
+- Aggregate results with MultiQC to compare quality metrics across samples and identify potential sequencing batch effects (quality score differences, GC content patterns, adapter contamination levels)
 - Check key metrics: per-base quality, adapter contamination, GC content, sequence duplication
 - Set quality thresholds: Phred score > 20 for most bases, < 10% adapter contamination
 
@@ -232,10 +94,6 @@ The complete pipeline consists of the following stages:
 ```bash
 # FastQC on raw reads
 fastqc sample_R1.fastq.gz sample_R2.fastq.gz -o qc_raw/
-
-# QC3 raw data QC (first stage of multi-stage QC)
-qc3 --fastq1 sample_R1.fastq.gz --fastq2 sample_R2.fastq.gz \
-  --output qc3_raw/ --stage raw
 
 # MultiQC aggregation
 multiqc qc_raw/ -o qc_raw_report/
@@ -255,7 +113,7 @@ UMIs (Unique Molecular Identifiers) are molecular barcodes used to tag individua
 
 - Accurate duplicate removal (grouping reads from the same original molecule)
 - Error correction (consensus building from UMI families)
-- Improved low VAF variant detection (especially important for ctDNA and low-purity tumor samples)
+- Improved low VAF (variant allele fraction, the proportion of DNA molecules in a specific sample that carry a particular genetic mutation at a given genomic location) variant detection (especially important for ctDNA and low-purity tumor samples)
 
 **UMI Location Options**:
 
@@ -271,9 +129,9 @@ UMIs (Unique Molecular Identifiers) are molecular barcodes used to tag individua
 - **UMI quality assessment**: Check UMI base quality scores after extraction
 - **UMI correction**: Perform UMI correction if UMI base quality is low (see Stage 4)
 - Use fastp's automatic adapter detection for paired-end reads
-- Remove low-quality bases (Phred < 20) from ends
-- Remove reads shorter than 36 bp after trimming
-- Use sliding window approach (4 bp window, mean quality > 20)
+- Remove low-quality bases (Phred < 15) from ends
+- Remove reads shorter than 25 bp after trimming
+- Use sliding window approach (4 bp window, mean quality > 15)
 - Keep paired-end reads properly paired
 - fastp provides integrated QC metrics (similar to FastQC) in JSON/HTML format
 
@@ -332,23 +190,12 @@ After UMI extraction by fastp, validate that UMIs are correctly formatted and ca
    - Verify UMI length matches expected length
    - Check for invalid characters in UMIs (should be A, T, G, C, N)
 
-2. **Verify UMI will be transferred to BAM**:
-   - fastp extracts UMIs to read names, but downstream tools (UMICollapse, fgbio) need UMIs in BAM tags
-   - BWA-MEM and other aligners preserve read names, but UMIs need to be in RX tag for downstream tools
-   - Validate that alignment will preserve UMI information
-
-3. **Test UMI extraction compatibility**:
-   - Verify UMI format matches what downstream tools expect
-   - UMICollapse expects RX tag in BAM (extracted from read names during alignment or post-alignment)
-   - fgbio expects RX tag or can extract from read names
-
 **Best Practices**:
 
-- **Validate UMI format immediately after extraction**: Check a sample of reads to ensure UMIs are correctly appended
+- **Validate UMI format immediately after extraction**: Check a sample of reads to ensure UMIs are correctly appended to read names
 - **Verify UMI length**: Ensure all UMIs have expected length (e.g., 8-12 bp)
-- **Check UMI quality**: If UMI quality scores are available, assess quality distribution
-- **Test compatibility**: Extract a small sample and verify UMIs can be processed by downstream tools
 - **Document UMI format**: Record UMI location, length, and format for reference
+- **After alignment (Stage 4)**: Verify UMIs are properly transferred to BAM and can be extracted for downstream tools
 
 **Example Commands**:
 
@@ -382,18 +229,7 @@ echo "UMI count: $UMI_COUNT, Read count: $READ_COUNT"
 # Step 4: Check UMI uniqueness (optional, for quality assessment)
 sort extracted_umis.txt | uniq | wc -l
 # Compare unique UMIs to total UMIs to assess UMI diversity
-
-# Step 5: Verify UMI will be preserved during alignment
-# BWA-MEM preserves read names, so UMIs in read names will be in BAM
-# After alignment, extract UMIs from BAM to verify (see Stage 4)
 ```
-
-**Troubleshooting**:
-
-- **UMIs not in read names**: Check fastp output format; verify `--umi_prefix` was used correctly
-- **UMI length mismatch**: Verify `--umi_len` matches actual UMI length in data
-- **Invalid characters**: May indicate sequencing errors; consider UMI correction (Stage 4)
-- **Missing UMIs**: Some reads may not have UMIs; check fastp logs for extraction statistics
 
 ### Stage 3: Alignment to Reference Genome
 
@@ -401,26 +237,73 @@ sort extracted_umis.txt | uniq | wc -l
 
 **Tools**:
 
-- **BWA-MEM**: Industry standard for short reads
 - **DRAGEN** (if available): Hardware-accelerated alignment on FPGA platform
-- **DRAGEN-GATK**: Software implementation for standard hardware (CPU/GPU), recommended when DRAGEN hardware is not available
+- **DRAGMAP**: Software implementation for standard hardware (CPU/GPU), recommended when FPGA
+- **BWA-MEM**: Industry standard for short reads hardware is not available
 
-**Best Practices**:
+#### Comparison: BWA-MEM vs. DRAGEN vs. DRAGMAP
+
+| Feature | **BWA-MEM** | **DRAGEN** | **DRAGMAP** |
+|---------|-------------|------------|-------------|
+| **Hardware Requirements** | Standard CPU | FPGA hardware (Illumina DRAGEN platform) | Standard CPU/GPU |
+| **Speed** | Moderate (industry standard) | Very fast (hardware-accelerated) | Fast (optimized software implementation) |
+| **Accuracy** | High (well-validated) | High (equivalent to DRAGMAP) | High (equivalent to DRAGEN) |
+| **Decoy Support** | Manual setup required | Built-in support | Built-in support with automatic detection |
+| **ALT Masking** | Manual BED file required | Built-in support | Built-in support with ALT mask BED |
+| **Pangenome Support** | Not supported | Supported (DRAGEN v4.3+) | Supported (with pangenome hash tables) |
+| **Cost** | Free, open-source | Requires DRAGEN hardware purchase | Free, open-source |
+| **Ease of Use** | Well-documented, widely adopted | Requires DRAGEN hardware setup | Easy installation via conda or build from source |
+| **Best Use Cases** | • Standard research workflows<br>• When DRAGEN hardware unavailable<br>• Widely compatible with existing pipelines | • Large-scale production environments<br>• When speed is critical<br>• When DRAGEN hardware is available | • When DRAGEN-like accuracy needed without hardware<br>• Large-scale projects requiring fast alignment<br>• Somatic variant calling (improved mapping specificity) |
+
+**Recommendation for Somatic Variant Analysis**: Prioritize **DRAGMAP** or **DRAGEN** over BWA-MEM for somatic variant calling due to:
+- **Improved mapping specificity**: Built-in decoy and ALT masking reduce false positives from misaligned reads (critical for low-VAF variant detection)
+- **Better accuracy for low-VAF variants**: Reduced ambiguous mapping improves detection of rare somatic variants
+- **DRAGEN-GATK compatibility**: DRAGMAP/DRAGEN alignments are optimized for GATK variant calling workflows
+
+**When to Use DRAGEN**:
+- Large-scale production environments with high throughput needs
+- When DRAGEN hardware platform is available
+- When maximum speed is critical
+- Clinical or commercial sequencing services
+- **Somatic variant analysis** (recommended when hardware available)
+
+**When to Use DRAGMAP**:
+- **Somatic variant analysis** (recommended for standard hardware)
+- When DRAGEN-like accuracy and features are needed without hardware investment
+- Large-scale projects requiring fast alignment on standard hardware
+- Projects benefiting from built-in decoy and ALT masking support
+
+**When to Use BWA-MEM**:
+- Standard research workflows with well-established pipelines
+- When compatibility with existing tools is important
+- Projects with moderate throughput requirements
+- When DRAGEN hardware is not available and DRAGMAP cannot be used
+- **Note**: For somatic variant analysis, DRAGMAP/DRAGEN are preferred due to improved mapping specificity
+
+**Best Practices for DRAGMAP alignment**: See the [DRAGMAP and GATK Variant Calling Tutorial]({% post_url 2026-01-18-016-dragmap-gatk-variant-calling-tutorial %}) for detailed alignment commands, reference preparation, and best practices.
+
+**Best Practices for BWA-mem alignment**:
 
 - Use GRCh38/hg38 reference genome (latest version, most used) or T2T reference (premature release, incomplete annotation)
-- Include decoy sequences (hs38d1) for better mapping
+- Include decoy sequences (hs38d1) and ALT assemblies for better mapping
 - Set appropriate read group information (SM, ID, PL, LB, PU)
-- **Sequencing type considerations**:
+- **Sequencing type considerations** (see Overview table for WGS vs WES differences):
   - **WGS**: No target region restrictions; align all reads genome-wide
-  - **WES**: No target region restrictions during alignment (align all reads, filter to targets later if needed)
-  - **Target BED file**: For WES, obtain exome target BED file from capture kit manufacturer for downstream QC and variant calling
+  - **WES**: No target region restrictions during alignment (align all reads, filter to targets later if needed); obtain exome target BED file from capture kit manufacturer for downstream QC and variant calling
 - **If UMIs were extracted by fastp**: 
   - BWA-MEM preserves read names, so UMIs in read names will be preserved in BAM
   - UMIs need to be in RX tag for downstream tools (UMICollapse, fgbio)
   - Convert UMIs from read names to RX tag after alignment (see Stage 4)
-- For ctDNA: Use sensitive alignment parameters
+- **For ctDNA (circulating tumor DNA)**: Use sensitive BWA-mem alignment parameters to maximize detection of low-VAF variants
+  - **Rationale**: ctDNA samples typically have low tumor fraction and low-VAF variants (<1-5%), requiring more sensitive alignment to avoid missing true variants
+  - **Parameter adjustments** (general recommendations; adjust based on your data and validation):
+    - **Lower mismatch penalty**: Reduce `-B` (mismatch penalty) to allow more mismatches (e.g., `-B 2` instead of default `-B 4`)
+    - **Lower gap penalties**: Reduce gap open/extend penalties to allow more indels (e.g., `-O 4,4 -E 1,1` instead of default `-O 6,6 -E 1,1`)
+    - **Shorter seed length**: Use `-k` to allow shorter seeds for more sensitive mapping (e.g., `-k 17` instead of default `-k 19`)
+  - **Consider**: These settings increase sensitivity for low-VAF variants but may also increase false positives; balance with downstream filtering and use UMI-based error correction when available
+  - **Note**: Specific parameter values should be validated for your sequencing platform and ctDNA workflow; consider benchmarking against known variants
 
-**Example Commands**:
+**Example Commands for BWA-mem alignment**:
 
 ```bash
 # BWA-MEM alignment
@@ -441,6 +324,21 @@ if [ -n "$HAS_UMI" ]; then
     echo "UMI found in BAM read names" || \
     echo "WARNING: UMI not found in BAM read names"
 fi
+
+# BWA-MEM alignment for ctDNA (sensitive parameters for low-VAF detection)
+bwa mem -t 16 -M \
+  -B 2 -O 4,4 -E 1,1 -k 17 \
+  -R "@RG\tID:ctDNA_sample\tSM:ctDNA_sample\tPL:ILLUMINA\tLB:lib1\tPU:unit1" \
+  reference.fa \
+  ctDNA_R1_trimmed.fastq.gz ctDNA_R2_trimmed.fastq.gz \
+  | samtools view -bS - > ctDNA_sample.bam
+# Sensitive parameters for ctDNA:
+# -B 2: Lower mismatch penalty (default 4) - allows more mismatches for variant detection
+# -O 4,4: Lower gap open penalty (default 6,6) - allows more indels
+# -E 1,1: Gap extension penalty (default 1,1) - same as default
+# -k 17: Shorter seed length (default 19) - increases sensitivity for low-quality reads
+# Note: Sensitive parameters increase sensitivity for low-VAF variants but may increase false positives;
+#       use UMI-based error correction and stringent downstream filtering
 ```
 
 ### Stage 4: Post-alignment Processing
@@ -464,7 +362,7 @@ fi
 **Tools**:
 
 - **Standard duplicate marking**:
-  - **DRAGEN-GATK MarkDuplicates**: Recommended for best performance
+  - **GATK MarkDuplicates**: Recommended for best performance
   - **samtools markdup**: Alternative duplicate marking
 - **UMI correction** (if UMI quality is low):
   - **fgbio CorrectUmis**: Correct UMI sequencing errors by matching to known UMI sets or using network-based methods
@@ -475,15 +373,19 @@ fi
     - **fgbio GroupReadsByUmi**: Group reads by UMI and alignment position
     - **fgbio CallMolecularConsensusReads**: Generate consensus reads from UMI families
     - **fgbio FilterConsensusReads**: Filter consensus reads by quality
-- **DRAGEN-GATK BaseRecalibrator + ApplyBQSR**: Quality score recalibration (recommended for best performance)
+- **GATK BaseRecalibrator + ApplyBQSR**: Quality score recalibration (recommended for best performance)
 
 **Best Practices**:
 
 - **Check for UMIs**: Verify if UMI information is present in read names (from Stage 2)
-- **Validate UMI format in BAM**: After alignment, verify UMIs are accessible
-  - **Extract UMIs from BAM read names**: Check that UMIs from fastp are preserved in BAM
-  - **Convert to BAM tags if needed**: Some tools require UMIs in RX tag rather than read names
-  - **Verify UMI format compatibility**: Ensure UMIs can be extracted by UMICollapse or fgbio
+- **Validate UMI format in BAM**: After alignment, verify UMIs are accessible and properly formatted
+  - **Verify UMI transfer to BAM**: fastp extracts UMIs to read names, and aligners preserve read names; verify UMIs are present in aligned BAM
+  - **Extract UMIs from BAM read names**: Check that UMIs from fastp are preserved in BAM read names
+  - **Convert to BAM tags if needed**: Downstream tools (UMICollapse, fgbio) require UMIs in RX tag rather than read names
+  - **Test UMI extraction compatibility**: Verify UMI format matches what downstream tools expect
+    - UMICollapse expects RX tag in BAM (extracted from read names during alignment or post-alignment)
+    - fgbio expects RX tag or can extract from read names
+  - **Validate UMI format**: Ensure UMIs can be extracted by UMICollapse or fgbio
 - **Assess UMI quality**: Check UMI base quality scores
   - **Low quality threshold**: Mean UMI quality < 20 (Phred score)
   - **Perform correction if**: >10% of UMIs have low-quality bases
@@ -509,7 +411,7 @@ fi
     - Use when error correction via consensus is critical (e.g., very low VAF detection)
   - More accurate than standard duplicate marking for low VAF variants
 - **Standard duplicate marking** (if no UMIs):
-  - Mark duplicates to avoid false positives from PCR artifacts
+  - Mark duplicates based on mapping coordinates (and CIGAR) to avoid false positives from PCR artifacts
   - For ctDNA: Consider less aggressive duplicate marking (may remove true low-VAF variants)
 - Use known variant sites (dbSNP, Mills) for BQSR
 - Generate metrics: duplication rate, insert size distribution, UMI family size (if applicable)
@@ -517,8 +419,14 @@ fi
 **Example Commands**:
 
 ```bash
-# Standard duplicate marking (no UMIs) - using DRAGEN-GATK
+# Standard duplicate marking (no UMIs, only coordinates) - using GATK
 gatk MarkDuplicates \
+  -I sample.sorted.bam \
+  -O sample.markdup.bam \
+  -M sample.markdup.metrics.txt
+
+# or using coordinates and CIGAR
+gatk MarkDuplicatesWithMateCigar \
   -I sample.sorted.bam \
   -O sample.markdup.bam \
   -M sample.markdup.metrics.txt
@@ -537,17 +445,7 @@ samtools view sample.sorted.bam | \
   head -10
 # Expected: UMI sequences (e.g., ATCGATCG)
 
-# If UMIs are in read names but not in RX tag, add RX tag
-# Option A: Use fgbio ExtractUmisFromBam (if UMIs are in read sequences, not read names)
-# Note: fgbio ExtractUmisFromBam extracts UMIs from read sequences based on read structure
-# If fastp put UMIs in read names (not sequences), use Option B instead
-# fgbio ExtractUmisFromBam \
-#   --input sample.sorted.bam \
-#   --output sample.umi_tagged.bam \
-#   --read-structure "+T 8M147S +T 8M147S" \
-#   --molecular-index-tags RX
-
-# Option B: Extract UMIs from read names and add as RX tag
+# Extract UMIs from read names and add as RX tag
 # fastp appends UMI to read name (format: readname:UMI:sequence when --umi_prefix "UMI:" is used)
 # Method 1: Using awk (GNU awk required for match() with array)
 samtools view -h sample.sorted.bam | \
@@ -714,6 +612,7 @@ gatk ApplyBQSR \
 - **GATK CollectHsMetrics**: Hybrid selection (targeted) coverage metrics (for WES and targeted panels)
 - **GATK CollectGcBiasMetrics**: GC bias assessment
 - **Qualimap**: Comprehensive BAM QC analysis
+- **QoRTs**: Quality control tool for RNA-seq and DNA-seq data; provides detailed QC metrics including coverage, mapping quality, insert size, and gene/transcript-level statistics; generates comprehensive QC reports and visualizations
 - **Alfred**: Multi-sample QC metrics in read-group aware manner; computes alignment metrics, GC bias, base composition, insert size, and coverage distributions; supports haplotype-aware analysis; provides interactive web application for visualization
 - **QC3**: Multi-stage QC tool (alignment stage); detects batch effects and cross-contamination
 - **SeqSQC**: Sex check tool that predicts sample sex based on X chromosome inbreeding coefficient; identifies discrepancies between reported and genetic sex
@@ -721,19 +620,11 @@ gatk ApplyBQSR \
 
 **Key Metrics to Assess**:
 
-1. **Coverage Metrics**:
+1. **Coverage Metrics** (see QC Thresholds section below for specific thresholds):
 
-   - **Mean coverage**: Should meet minimum requirements
-     - **WGS**: 60-100x for tumor, 30-60x for normal
-     - **WES**: 100-150x for tumor, 50-100x for normal (mean coverage in target regions)
+   - **Mean coverage**: Should meet minimum requirements (see Overview table and QC Thresholds section)
    - **Coverage uniformity**: Coefficient of variation (CV) < 0.5 for uniform coverage
-   - **On-target percentage**: 
-     - **WGS**: Not applicable (no target regions)
-     - **WES**: >80% reads on target (exonic regions)
-     - **Targeted panels**: >80% reads on target
-   - **Coverage at target regions**: 
-     - **WGS**: Assess genome-wide coverage distribution
-     - **WES**: Ensure adequate depth in exonic regions (use target BED file)
+   - **On-target percentage**: WGS not applicable; WES and targeted panels >80% (see Overview table)
    - **Coverage distribution**: Check for coverage gaps or extreme outliers
 
 2. **Mapping Quality**:
@@ -841,19 +732,19 @@ gatk CollectInsertSizeMetrics \
 
 # Collect coverage metrics
 # For WGS: Use CollectWgsMetrics (no target regions needed)
+# For WES: Use CollectHsMetrics with target BED file (exome regions)
 gatk CollectWgsMetrics \
   -R reference.fa \
   -I sample.recal.bam \
   -O sample.wgs_metrics.txt
 
-# For WES: Use CollectHsMetrics with target BED file (exome regions)
-# Download exome target BED file if not available (e.g., from capture kit manufacturer)
-gatk CollectHsMetrics \
-  -R reference.fa \
-  -I sample.recal.bam \
-  -O sample.wes_metrics.txt \
-  -TI exome_target_regions.bed \
-  -BI exome_target_regions.bed
+# For WES (replace CollectWgsMetrics with CollectHsMetrics):
+# gatk CollectHsMetrics \
+#   -R reference.fa \
+#   -I sample.recal.bam \
+#   -O sample.wes_metrics.txt \
+#   -TI exome_target_regions.bed \
+#   -BI exome_target_regions.bed
 
 # Collect GC bias metrics
 gatk CollectGcBiasMetrics \
@@ -898,10 +789,12 @@ verifyBamID \
   --out verifybamid_output \
   --precise
 
-# Alfred alignment QC (read-group aware, multi-sample)
+# Alfred alignment QC (read-group aware, multi-sample, recommended for batch effect detection)
+# Alfred generates interactive web application for visualization
+# Access at: alfred_qc_multi/index.html
 alfred qc -r reference.fa \
-  -o alfred_qc/ \
-  sample.recal.bam
+  -o alfred_qc_multi/ \
+  *.recal.bam
 
 # QC3 alignment QC (second stage of multi-stage QC)
 qc3 --bam sample.recal.bam \
@@ -939,7 +832,7 @@ multiqc . \
   --title "Post-Alignment QC"
 ```
 
-**QC Thresholds** (recommended minimums):
+**QC Thresholds** (adjust based on goals):
 
 - **Mean coverage**: 
   - **WGS tumor**: ≥60x (genome-wide mean)
@@ -990,7 +883,7 @@ multiqc . \
 **SNV/Indel Callers** (use 3-5 for consensus):
 
 1. **DRAGEN** (if available): Hardware-accelerated, high sensitivity
-2. **GATK Mutect2**: Industry standard for tumor-normal pairs
+2. **GATK Mutect2**: Industry standard for tumor-normal pairs; DRAGEN features can be enabled for improved accuracy (`--dragen-mode true`). See the [DRAGMAP and GATK Variant Calling Tutorial]({% post_url 2026-01-18-016-dragmap-gatk-variant-calling-tutorial %}) for detailed alignment commands, reference preparation, and best practices.
 3. **Strelka2**: High sensitivity, good for indels
 4. **VarScan2**: Good for low-coverage data
 5. **SomaticSniper**: Fast processing for high-coverage data
@@ -1006,31 +899,24 @@ multiqc . \
 **CNV Callers** (use 2-3 for consensus):
 
 1. **DRAGEN CNV** (if available): Hardware-accelerated on FPGA platform
-2. **DRAGEN-GATK CNV**: Software implementation for standard hardware, recommended when DRAGEN hardware is not available
+2. **GATK CNV**: Software implementation for standard hardware, recommended when DRAGEN hardware is not available
 3. **Control-FREEC**: Works with/without matched normal
 4. **ASCAT**: Handles tumor purity and ploidy
-
-**Note on CNV Calling for WES**:
-- CNV calling from WES data is more challenging than WGS due to sparse coverage
-- Some CNV callers work better with WES (e.g., Control-FREEC, ExomeDepth)
-- For WES: Consider using specialized exome CNV callers or accept lower sensitivity
-- For WGS: All CNV callers work well with genome-wide coverage
 
 **Best Practices**:
 
 - Run all callers on same BAM files for fair comparison
 - Use tumor-normal pairs when available (improves specificity)
 - For tumor-only: Use population frequency filtering
-- **Sequencing type considerations**:
+- **Sequencing type considerations** (see Overview table for WGS vs WES differences):
   - **WGS**: No target region restrictions; call variants genome-wide; provides comprehensive variant detection including non-coding regions
-  - **WES**: Provide target BED file (exome regions) to variant callers for better performance; focus on exonic variants; may miss non-coding variants
-  - **Target regions**: For WES, use exome target BED file to restrict variant calling to target regions (optional but recommended for efficiency)
+  - **WES**: Provide target BED file (exome regions) to variant callers for better performance; focus on exonic variants; may miss non-coding variants; CNV calling is more challenging due to sparse coverage
 - **UMI-aware variant calling** (if UMIs were processed in Stage 4):
   - Use deduplicated BAM files from UMICollapse (fast, recommended)
   - Or use consensus BAM files from fgbio workflow (for error correction)
   - Some callers (e.g., LoFreq, VarDict) can directly use UMI information
   - UMI-processed data enables lower VAF thresholds
-- **Note**: Tumor purity estimation (Stage 9) will be performed after variant calling and consensus. Purity estimates are used in downstream filtering (Stage 12) and prioritization (Stage 13). Some callers (e.g., VarScan2) can accept purity estimates if available
+- **Note**: Tumor purity estimation (Stage 9) will be performed after variant calling and consensus. Purity estimates are used in downstream filtering (Stage 12) and prioritization (Stage 13)
 - Set appropriate VAF thresholds:
   - **WGS tissue**: 5-10% minimum (adjust for purity)
   - **WES tissue**: 5-10% minimum (adjust for purity; may have higher depth in target regions)
@@ -1041,60 +927,32 @@ multiqc . \
 **Example Commands**:
 
 ```bash
-# DRAGEN-GATK somatic variant calling (tumor-normal pair) - recommended
+# GATK Mutect2 somatic variant calling with DRAGEN features (tumor-normal pair) - recommended
 # For WGS: No target regions needed
+# For WES: Add -L exome_target_regions.bed to restrict to target regions
 gatk Mutect2 \
   -R reference.fa \
   -I tumor.recal.bam \
   -I normal.recal.bam \
   -normal normal_sample \
-  -O dragen_gatk.vcf.gz \
-  --tumor-sample tumor_sample
-
-# For WES: Optionally restrict to target regions (improves performance)
-# Download exome target BED file if not available
-gatk Mutect2 \
-  -R reference.fa \
-  -I tumor.recal.bam \
-  -I normal.recal.bam \
-  -normal normal_sample \
-  -O dragen_gatk.vcf.gz \
+  -O mutect2-dragen.vcf.gz \
   --tumor-sample tumor_sample \
-  -L exome_target_regions.bed
-
-# Alternative: Standard Mutect2 (if DRAGEN-GATK not available)
-# For WGS
-gatk Mutect2 \
-  -R reference.fa \
-  -I tumor.recal.bam \
-  -I normal.recal.bam \
-  -normal normal_sample \
-  -O mutect2.vcf.gz
-
-# For WES (with target regions)
-gatk Mutect2 \
-  -R reference.fa \
-  -I tumor.recal.bam \
-  -I normal.recal.bam \
-  -normal normal_sample \
-  -O mutect2.vcf.gz \
-  -L exome_target_regions.bed
+  --dragen-mode true \
+  --use-pdhmm true \
+  --dragstr-params-path /path/to/dragstr_params
+  
+# DRAGEN features:
+# --dragen-mode true: Enables DRAGEN algorithms for improved accuracy
+# --use-pdhmm true: Uses position-dependent HMM for maximum quality (optional)
+# --dragstr-params-path: Path to DRAGSTR parameters file (optional, for STR-aware variant calling)
 
 # Strelka2
-# For WGS: No target regions
+# For WGS: Use default configuration
+# For WES: Add --exome and --callRegions exome_target_regions.bed
 configureStrelkaSomaticWorkflow.py \
   --tumorBam tumor.recal.bam \
   --normalBam normal.recal.bam \
   --referenceFasta reference.fa \
-  --runDir strelka_workflow
-
-# For WES: Optionally restrict to target regions
-configureStrelkaSomaticWorkflow.py \
-  --tumorBam tumor.recal.bam \
-  --normalBam normal.recal.bam \
-  --referenceFasta reference.fa \
-  --exome \
-  --callRegions exome_target_regions.bed \
   --runDir strelka_workflow
 
 strelka_workflow/runWorkflow.py -m local -j 16
@@ -1145,7 +1003,7 @@ gridss \
 - **SURVIVOR**: Structural variant consensus caller
 - **Custom scripts**: For flexible voting strategies
 
-**SNV/Indel Consensus**:
+**A. SNV/Indel Consensus**:
 
 **Voting Strategies**:
 
@@ -1162,7 +1020,7 @@ gridss \
 - Track which callers identified each variant
 - Consider caller-specific strengths (e.g., Strelka2 for indels)
 
-**Structural Variant Consensus**:
+**B. Structural Variant Consensus**:
 
 **Voting Strategies** (SVs are harder to detect, consensus is critical):
 
@@ -1256,9 +1114,18 @@ SURVIVOR merge sv_vcf_list.txt \
 
 4. **Transition/Transversion (Ti/Tv) Ratio**:
 
-   - **Somatic variants**: Ti/Tv ratio ~2.0 (expected for somatic mutations)
-   - **Deviations**: Ti/Tv <1.5 may indicate false positives, >2.5 may indicate filtering issues
+   - **Somatic variants**: Ti/Tv ratio ~2.0 (expected for somatic mutations in fresh/frozen samples)
+   - **FFPE samples**: Ti/Tv ratio is typically elevated (~2.4-2.7) due to formalin fixation artifacts:
+     - **Primary cause**: Cytosine deamination during fixation converts C→T (and G→A on opposite strand), increasing transition mutations
+     - **Factors affecting severity**: Fixation duration, formalin pH, storage age, block conditions
+     - **Artifact pattern**: Excess C→T and G→A transitions, especially at low VAF (<5-10%)
+     - **Mitigation**: Use UMI-based error correction, enzymatic repair (uracil DNA glycosylase), higher coverage requirements, filter low-VAF C→T/G→A variants
+   - **Deviations**: 
+     - Ti/Tv <1.5 may indicate false positives or poor quality
+     - Ti/Tv >2.5 may indicate filtering issues (fresh samples) or FFPE artifacts (FFPE samples)
+     - Ti/Tv >2.7 in FFPE samples may indicate severe degradation/artifacts
    - **By variant type**: Check Ti/Tv for SNVs vs indels separately
+   - **By VAF**: FFPE artifacts are more common at low VAF; high VAF (clonal) variants are less affected
 
 5. **Variant Type Distribution**:
 
@@ -1274,20 +1141,42 @@ SURVIVOR merge sv_vcf_list.txt \
 
 7. **Coverage at Variant Sites**:
 
-   - **Mean depth at variants**: Should be adequate (≥10-20x)
-   - **Coverage distribution**: Check for variants in low-coverage regions
-   - **Allelic depth**: Check AD (allelic depth) for proper VAF calculation
+   - **Mean depth at variants**: Should be adequate (sequencing-strategy dependent):
+     - **WGS**: ≥10-20x (minimum for reliable variant calling)
+     - **WES**: ≥30-50x (higher threshold due to uneven coverage in target regions)
+     - **Targeted panels**: ≥100x (much higher threshold due to high expected coverage)
+     - **UMI-based sequencing** (with UMI error correction):
+       - UMI consensus can improve variant calling confidence at slightly lower coverage
+       - For ctDNA/low-VAF detection: Maintain high coverage (≥100x WGS, ≥200x WES) even with UMIs
+       - UMI processing primarily benefits VAF detection thresholds, not coverage depth requirements
+   - **Coverage distribution**: Check for variants in low-coverage regions (use sequencing-strategy specific thresholds)
+   - **Allelic depth**: Check AD (allelic depth) for proper VAF calculation:
+     - **Standard sequencing**: Should be ≥3-5 reads supporting the variant (multiple independent reads)
+     - **UMI-based sequencing** (with UMI deduplication and consensus):
+       - Each UMI consensus read represents a unique original molecule, not a PCR duplicate
+       - A single high-quality UMI consensus read can be used as supporting evidence (more reliable than a single raw read)
+       - **Recommended thresholds**:
+         - **High-quality UMI consensus**: AD >= 1-2 (acceptable for very low VAF variants)
+         - **Standard UMI consensus**: AD >= 2-3 (prefer multiple UMI families)
+         - **Low-quality or small UMI families**: AD >= 3-5 (treat similar to standard sequencing)
+       - **Quality considerations**: UMI consensus reads from well-supported families (e.g., ≥3 reads per UMI family) are more reliable
+       - **For ctDNA/low-VAF**: May accept AD >= 1-2 for high-quality UMI consensus reads, but prefer multiple UMI families when possible
 
-8. **Cross-Sample Contamination**:
+8. **Cross-Sample Contamination (Variant-Level Check)**:
 
+   **When to perform**: After variant calling (Stage 6-7), as a complementary check to the BAM-level contamination detection performed in Stage 4.
+   
+   **Note**: Initial contamination detection should be performed in Stage 4 (Post-alignment Processing) using BAM files. This variant-level check provides additional validation and can detect contamination patterns that may be more apparent in variant calls.
+   
    - **Contamination detection at variant level**: Use specialized tools
-     - **DRAGEN Cross-Sample Contamination**: Can be run on variant calls to detect contamination
-     - **ContEst**: Can estimate contamination from variant data
-     - **QC3**: Detects cross-contamination at variant detection stage
-   - **Unexpected variants**: Check for variants inconsistent with sample
-   - **Variant sharing**: Compare with other samples to detect contamination
-   - **Heterozygosity**: Check for excessive heterozygosity (may indicate contamination)
-   - **VAF patterns**: Contaminated samples may show unexpected VAF distributions
+     - **DRAGEN Cross-Sample Contamination**: Can be run on variant calls to detect contamination (complements BAM-level detection in Stage 4)
+     - **ContEst**: Can estimate contamination from variant allele frequencies (alternative to BAM-level ContEst in Stage 4)
+     - **QC3**: Detects cross-contamination at variant detection stage (complements alignment-stage QC3 in Stage 4)
+   - **Variant-level contamination indicators**:
+     - **Unexpected variants**: Check for variants inconsistent with sample (e.g., variants not expected based on sample metadata)
+     - **Variant sharing**: Compare with other samples to detect contamination (unexpectedly high variant overlap between unrelated samples)
+     - **Heterozygosity**: Check for excessive heterozygosity (may indicate contamination)
+     - **VAF patterns**: Contaminated samples may show unexpected VAF distributions (e.g., bimodal VAF distribution)
 
 9. **Structural Variant Metrics**:
 
@@ -1296,20 +1185,75 @@ SURVIVOR merge sv_vcf_list.txt \
    - **SV quality scores**: Check quality distribution
    - **Breakpoint confidence**: Assess breakpoint resolution
 
+**Variant Filtering Based on QC Metrics**:
+
+Before comprehensive filtering (Stage 12), apply preliminary filters based on QC assessment:
+
+- **Quality-based filtering**:
+  - Remove variants with QUAL < 20-30 (low confidence)
+  - Filter variants in low-coverage regions (sequencing-strategy dependent):
+    - **WGS**: <10x depth (minimum threshold for variant calling)
+    - **WES**: <20x depth (higher threshold due to uneven coverage in target regions)
+    - **Targeted panels**: <50x depth (much higher threshold due to high expected coverage)
+    - **UMI-based sequencing** (with UMI error correction):
+      - UMI consensus building improves variant calling accuracy and reduces false positives
+      - Can allow slightly lower coverage thresholds (e.g., WGS: <8x, WES: <15x) due to error correction for standard samples
+      - **For ctDNA samples** (low input DNA):
+        - **Critical**: ctDNA requires very high initial sequencing depth (≥100x WGS, ≥200x WES) BEFORE UMI deduplication
+        - After UMI deduplication, coverage will be lower (often 20-50% of original), but this is expected and acceptable
+        - The high initial depth compensates for low input DNA and ensures sufficient unique molecules remain after deduplication
+        - UMI processing enables lower VAF detection (0.05-0.1% vs 0.1-0.5% without UMIs) by error correction, even with reduced post-deduplication coverage
+        - **Do not use lower coverage thresholds for ctDNA**: The high initial sequencing depth is essential to achieve adequate unique molecule coverage after deduplication
+  - Remove variants with poor caller agreement (called by only 1 caller when multiple callers used)
+- **VAF-based filtering** (preliminary, adjust after purity estimation):
+  - For tumor-normal pairs: Remove variants with VAF > 0.4 in normal (likely germline)
+  - For tumor-only: Remove variants with VAF > 0.01 in population databases (gnomAD)
+  - Keep variants with VAF > 0.01 in tumor (adjust based on tumor purity)
+- **Ti/Tv ratio filtering**:
+  - If Ti/Tv ratio is abnormal, investigate and apply stricter quality filters:
+    - **Fresh/frozen samples**: Ti/Tv <1.5 or >2.5 may indicate false positives or filtering issues
+    - **FFPE samples**: Ti/Tv >2.7 may indicate severe FFPE artifacts; expect elevated Ti/Tv (~2.4-2.7) due to cytosine deamination
+  - **FFPE-specific filtering**:
+    - Filter low-VAF C→T and G→A transitions (common FFPE artifacts)
+    - Require higher coverage or UMI support for C→T/G→A variants in FFPE samples
+    - Consider enzymatic repair (uracil DNA glycosylase) during library prep for FFPE samples
+  - Variants contributing to abnormal Ti/Tv may need additional filtering
+- **Coverage-based filtering**:
+  - Remove variants with insufficient allelic depth:
+    - **Standard sequencing** (no UMI): AD < 3-5 reads (multiple independent reads required)
+    - **UMI-based sequencing** (with UMI deduplication and consensus):
+      - Each UMI consensus read represents a unique original molecule (not a PCR duplicate)
+      - A single high-quality UMI consensus read can be used as supporting evidence, but multiple UMI families are preferred
+      - **Recommended thresholds**:
+        - **High-quality UMI consensus**: AD >= 1-2 (single high-quality consensus read acceptable for very low VAF variants)
+        - **Standard UMI consensus**: AD >= 2-3 (prefer multiple UMI families supporting the variant)
+        - **Low-quality or small UMI families**: AD >= 3-5 (treat similar to standard sequencing)
+      - **Quality considerations**: UMI consensus reads from well-supported families (e.g., ≥3 reads per UMI family) are more reliable than single raw reads
+      - **For ctDNA/low-VAF**: May accept AD >= 1-2 for high-quality UMI consensus reads, but prefer multiple UMI families when possible
+  - Filter variants in regions with poor coverage uniformity
+- **Caller-specific filtering**:
+  - Remove variants that fail caller-specific filters (e.g., Mutect2 FILTER field)
+  - For consensus variants: Consider requiring variants to pass filters in multiple callers
+
+**Note**: Comprehensive variant filtering (technical, biological, and clinical filters) is performed in Stage 12 after annotation and purity estimation. The filtering here is preliminary based on QC metrics.
+
 **Best Practices**:
 
 - Run QC on consensus variants (after Stage 7, before Stage 9)
 - **Use QC3 for variant detection QC**: Provides independent evaluation of variant quality and detects batch effects in variant calling
-- **Cross-sample contamination detection at variant level**: 
-  - **DRAGEN Cross-Sample Contamination**: Run on variant calls for contamination estimation
-  - **ContEst**: Can estimate contamination from variant allele frequencies
-  - **QC3**: Detects cross-contamination at variant detection stage
-  - **Variant sharing analysis**: Compare variant calls across samples to identify unexpected sharing
+- **Cross-sample contamination detection at variant level** (complements BAM-level detection in Stage 4): 
+  - **DRAGEN Cross-Sample Contamination**: Run on variant calls for contamination estimation (complements BAM-level DRAGEN contamination detection)
+  - **ContEst**: Can estimate contamination from variant allele frequencies (alternative/complement to BAM-level ContEst)
+  - **QC3**: Detects cross-contamination at variant detection stage (complements alignment-stage QC3)
+  - **Variant sharing analysis**: Compare variant calls across samples to identify unexpected sharing patterns
 - Compare metrics across callers to identify issues
-- Check VAF distribution for consistency with tumor purity (see Stage 8 for detailed VAF distribution analysis)
-- Validate Ti/Tv ratio (should be ~2.0 for somatic variants)
+- Check VAF distribution for consistency with tumor purity (see Stage 9 for purity estimation)
+- Validate Ti/Tv ratio:
+  - **Fresh/frozen samples**: Should be ~2.0 for somatic variants
+  - **FFPE samples**: Expect elevated Ti/Tv (~2.4-2.7) due to formalin fixation artifacts; Ti/Tv >2.7 may indicate severe degradation
 - Investigate outliers and unexpected patterns
-- Document QC metrics for reporting
+- Apply preliminary quality-based filters before annotation (Stage 11)
+- Document QC metrics and filtering decisions for reporting
 
 **Example Commands**:
 
@@ -1338,8 +1282,70 @@ bcftools view -v snps consensus.vcf.gz | \
 bcftools query -f '%CHROM\t%POS\t%INFO/CALLER\n' consensus.vcf.gz | \
   awk '{callers[$3]++} END {for(c in callers) print c, callers[c]}'
 
-# Coverage at variant sites
+# Preliminary variant filtering based on QC metrics
+# Quality-based filtering (QUAL >= 30)
+bcftools filter -i 'QUAL >= 30' consensus.vcf.gz \
+  -o consensus.qc_filtered.vcf.gz
+
+# Coverage-based filtering (sequencing-strategy dependent)
+# For WGS: DP >= 10
+# For WES: DP >= 20
+# For targeted panels: DP >= 50
+# For UMI-based sequencing (standard samples): Can use slightly lower thresholds (WGS: 8x, WES: 15x) due to error correction
+# For ctDNA with UMIs: 
+#   - Initial sequencing depth should be very high (≥100x WGS, ≥200x WES) BEFORE deduplication
+#   - After UMI deduplication, coverage will be lower (often 20-50% of original)
+#   - Filter based on POST-deduplication coverage: DP >= 20 for WGS, DP >= 50 for WES (adjust based on your deduplication rate)
+#   - The high initial depth compensates for low input and ensures adequate unique molecules after deduplication
+# Standard sequencing (no UMI): Require alternate allele depth (AD[1]) >= 3-5
+# AD[0] = reference allele depth, AD[1] = alternate allele depth
+# We filter based on alternate allele support, not reference allele
+bcftools filter -i 'INFO/DP >= 10 && INFO/AD[1] >= 3' \
+  consensus.vcf.gz \
+  -o consensus.coverage_filtered.vcf.gz
+
+# UMI-based sequencing: Can use lower AD thresholds (AD[1] >= 1-2) for high-quality UMI consensus reads
+# Each UMI consensus read represents a unique original molecule, so more reliable than raw reads
+# Filter based on alternate allele depth (AD[1]) - this is what supports the variant
+bcftools filter -i 'INFO/DP >= 10 && INFO/AD[1] >= 1' \
+  consensus.umi.vcf.gz \
+  -o consensus.umi_coverage_filtered.vcf.gz
+# Note: For UMI consensus reads, AD[1] >= 1 may be acceptable for high-quality consensus
+# Prefer AD[1] >= 2-3 when multiple UMI families support the variant
+# Using AD[1] (alternate allele) ensures we're filtering for variants with alternate allele support
+# Adjust DP threshold based on sequencing strategy (WGS: 10x, WES: 20x, targeted: 50x)
+# For UMI-based sequencing (standard): Slightly lower thresholds possible (WGS: 8x, WES: 15x)
+# For ctDNA with UMIs: Use post-deduplication coverage thresholds (WGS: 20x, WES: 50x) after high initial sequencing depth
+
+# VAF-based filtering for tumor-normal pairs (remove likely germline)
+# Remove variants with VAF > 0.4 in tumor sample
+bcftools filter -i 'FORMAT/AF[1] <= 0.4 || FORMAT/AF[1] == "."' \
+  consensus.vcf.gz \
+  -o consensus.vaf_filtered.vcf.gz
+
+# Combined preliminary filtering (adjust DP threshold based on sequencing strategy)
+# WGS: DP >= 10, WES: DP >= 20, Targeted: DP >= 50
+# FORMAT/AF[0] = reference allele frequency, FORMAT/AF[1] = alternate allele frequency
+# We filter based on alternate allele frequency (AF[1]) - this is the variant allele frequency
+bcftools filter -i 'QUAL >= 30 && INFO/DP >= 10 && (FORMAT/AF[1] >= 0.01 || FORMAT/AF[1] == ".")' \
+  consensus.vcf.gz \
+  -o consensus.preliminary_filtered.vcf.gz
+# Note: Adjust INFO/DP threshold based on sequencing strategy
+# Using FORMAT/AF[1] (alternate allele frequency) ensures we're filtering for variants with sufficient VAF
+
+# Filter variants that pass caller-specific filters (e.g., Mutect2)
+bcftools filter -i 'FILTER == "PASS" || FILTER == "."' \
+  consensus.vcf.gz \
+  -o consensus.pass_filtered.vcf.gz
+
+# Coverage at variant sites (QC metric for inspection/reporting)
+# This file is used for QC assessment, not for downstream filtering
+# Check mean coverage and identify variants in low-coverage regions
 bcftools query -f '%CHROM\t%POS\t%DP\n' consensus.vcf.gz > variant_coverage.txt
+
+# Optional: Use coverage data to identify low-coverage variants
+# Calculate mean coverage: awk '{sum+=$3; count++} END {print "Mean coverage:", sum/count}' variant_coverage.txt
+# Identify low-coverage variants: awk '$3 < 10' variant_coverage.txt > low_coverage_variants.txt
 
 # QC3 variant detection QC (third stage of multi-stage QC)
 qc3 --vcf consensus.vcf.gz \
@@ -1396,11 +1402,7 @@ multiqc . \
 
 - Post-alignment processed BAM files (tumor and normal if available)
 - **For ABSOLUTE**: Segmented copy-number data from CNV callers (Control-FREEC, ASCAT, or DRAGEN-GATK CNV) from Stage 6
-  - **WGS**: CNV calling works well; provides comprehensive copy-number data
-  - **WES**: CNV calling is more limited; may have lower sensitivity and resolution
 - **For TPES**: Somatic SNV calls from consensus variant calling (Stage 7)
-  - **WGS**: Works well with genome-wide SNV data
-  - **WES**: Works well with exonic SNV data (may have more SNVs in coding regions)
 
 **Best Practices**:
 
@@ -1410,7 +1412,7 @@ multiqc . \
   - High copy-number alterations (TPES may be less reliable)
   - Subclonal heterogeneity
 - Use consensus purity estimate (average or median of both methods)
-- Purity estimates are used to adjust VAF thresholds in downstream filtering (Stage 12) and prioritization (Stage 13)
+- Purity estimates are used to adjust VAF thresholds in downstream filtering (Stage 12) and prioritization (Stage 13) - see those sections for details
 - Minimum purity requirements: 20-30% for reliable variant detection
 
 **ABSOLUTE Workflow**:
@@ -1452,23 +1454,34 @@ multiqc . \
 ```bash
 # Step 1: Generate copy-number data for ABSOLUTE (using Control-FREEC from Stage 6)
 # For WGS: No target regions needed
+# For WES: Provide target BED file (exome regions) with -bed option
 control-freec -f reference.fa \
   -tumor tumor.recal.bam \
   -normal normal.recal.bam \
   -sample tumor_sample \
-  -o cnv_output/
-
-# For WES: Provide target BED file (exome regions)
-control-freec -f reference.fa \
-  -tumor tumor.recal.bam \
-  -normal normal.recal.bam \
-  -sample tumor_sample \
-  -bed exome_target_regions.bed \
   -o cnv_output/
 
 # Step 2: Prepare ABSOLUTE input (segmented copy-number file)
 # Format: chromosome, start, end, log2_ratio, copy_number
-# (Convert Control-FREEC output to ABSOLUTE format)
+# ABSOLUTE requires a segmented file with these columns (tab-delimited, no header)
+
+# Convert Control-FREEC output to ABSOLUTE format
+# Control-FREEC outputs: tumor_sample_ratio.txt (segmented ratios) and tumor_sample_CNVs (copy number calls)
+# Method 1: Using Control-FREEC ratio file (if available)
+# Extract columns: Chromosome, Start, End, Log2Ratio, CopyNumber
+awk 'BEGIN {OFS="\t"} NR>1 {print $1, $2, $3, $4, $5}' \
+  cnv_output/tumor_sample_ratio.txt > tumor.seg
+
+# Method 2: Using Control-FREEC CNVs file (if ratio file not available)
+# Control-FREEC CNVs file format: chromosome, start, end, copy_number, log2_ratio
+# Reorder to ABSOLUTE format: chromosome, start, end, log2_ratio, copy_number
+awk 'BEGIN {OFS="\t"} NR>1 {print $1, $2, $3, $5, $4}' \
+  cnv_output/tumor_sample_CNVs > tumor.seg
+
+
+# Alternative: Use ASCAT output (if ASCAT was used instead)
+# ASCAT outputs segmented data that can be converted similarly
+# Or use DRAGEN-GATK CNV output (if available)
 
 # Step 3: Run ABSOLUTE (R package)
 Rscript run_absolute.R \
@@ -1484,10 +1497,26 @@ tpes --vcf consensus.vcf.gz \
   --min-depth 10
 
 # Step 5: Compare and integrate results
+# Note: integrate_purity_estimates.py is a custom script that needs to be created
+# This script should compare ABSOLUTE and TPES results and generate consensus estimate
+# Alternative: Manual integration or use simple averaging
+
+# Option 1: Custom Python script (create based on your needs)
 python integrate_purity_estimates.py \
   --absolute absolute_output/purity.txt \
   --tpes tpes_output.txt \
   --output consensus_purity.txt
+
+# Option 2: Simple consensus using averaging (if both methods provide single purity value)
+# Extract purity values and calculate average
+awk '{sum+=$1; count++} END {print sum/count}' \
+  <(grep -E "^[0-9]" absolute_output/purity.txt) \
+  <(grep -E "^[0-9]" tpes_output.txt) > consensus_purity.txt
+
+# Option 3: Manual comparison
+# Compare purity estimates from both methods
+# Use average or median if values are close (<10% difference)
+# If values differ significantly, investigate and use the more reliable method
 ```
 
 **Output Interpretation**:
@@ -1495,7 +1524,7 @@ python integrate_purity_estimates.py \
 - **Purity estimate**: Proportion of tumor cells (0.0-1.0)
 - **Ploidy estimate** (from ABSOLUTE): Average number of chromosome copies
 - **Confidence metrics**: Check agreement between methods
-- **Use in downstream analysis**: Purity estimates are used to adjust VAF thresholds in filtering (Stage 12) and prioritization (Stage 13) - see those sections for details
+- **Use in downstream analysis**: See Stage 12 (filtering) and Stage 13 (prioritization) for how purity estimates are used
 
 **Special Considerations**:
 
@@ -1554,12 +1583,9 @@ python integrate_purity_estimates.py \
 
 - Post-alignment processed BAM files (tumor and normal if available)
 - For MSIseq: Variant calls (VCF files) from Stage 7
-  - **WGS**: Works well with genome-wide variant data
-  - **WES**: Works well with exonic variant data; may have sufficient microsatellite coverage in exons
 - For MANTIS and MSIsensor: BAM files with sufficient coverage
-  - **WGS**: Excellent coverage of microsatellite regions throughout genome
-  - **WES**: Limited to microsatellites in exonic regions; may have reduced sensitivity
 - Reference genome with microsatellite annotations (some tools provide this)
+- **Note**: WGS provides comprehensive microsatellite coverage; WES is limited to exonic microsatellites with reduced sensitivity (see Overview table)
 
 **Best Practices**:
 
@@ -1656,12 +1682,19 @@ Rscript run_msiseq.R \
   --vcf consensus.vcf.gz \
   --output msiseq_output.txt
 
-# Consensus MSI classification
-python integrate_msi_results.py \
-  --mantis mantis_output/msi_score.txt \
-  --msisensor msisensor_output/msi_score.txt \
-  --msiseq msiseq_output.txt \
-  --output consensus_msi.txt
+
+# Option 1: Manual integration using voting strategy
+# Classify as MSI-H if ≥2 tools call MSI-H, otherwise MSS
+# Example logic:
+# - MANTIS score >0.4 → MSI-H
+# - MSIsensor unstable loci >20% → MSI-H  
+# - MSIseq classification: MSI-H
+# Consensus: MSI-H if ≥2 tools agree, else MSS
+
+# Option 2: Simple consensus using command-line tools
+# Count MSI-H calls from each tool and apply majority voting
+grep -c "MSI-H\|High\|Unstable" mantis_output/msi_score.txt msisensor_output/msi_score.txt msiseq_output.txt | \
+  awk '{if($1 >= 2) print "MSI-H"; else print "MSS"}' > consensus_msi.txt
 ```
 
 **Output Interpretation**:
@@ -1702,7 +1735,8 @@ python integrate_msi_results.py \
 
 **Tools**:
 
-- **Ensembl VEP**: Comprehensive annotation (primary, supports SVs)
+- **Ensembl VEP**: Comprehensive annotation (primary, supports SVs, AI tools via plugins)
+- **SNPeffect 5.0**: Deep structural analysis with FoldX for protein stability predictions (ΔΔG)
 - **SnpEff**: Fast alternative annotation
 - **Annovar**: Commercial annotation suite
 - **AnnotSV**: Specialized structural variant annotation
@@ -1712,7 +1746,9 @@ python integrate_msi_results.py \
 - **Functional**: VEP consequences, protein changes
 - **Population frequency**: gnomAD, 1000 Genomes, ExAC
 - **Clinical**: COSMIC, ClinVar, OncoKB
-- **Pathogenicity**: CADD, SIFT, PolyPhen-2, AlphaMissense
+- **Pathogenicity**: CADD, SIFT, PolyPhen-2, AlphaMissense, EVE, REVEL
+- **AI-based predictors**: AlphaMissense (AlphaFold-derived), AlphaFold (structure annotation), EVE (evolutionary model), REVEL (ensemble predictor)
+- **Structure-based analysis**: FoldX (protein stability ΔΔG via SNPeffect 5.0), AlphaFold (pLDDT confidence scores)
 - **Drug databases**: OncoKB, CIViC, DrugBank
 - **Regulatory annotation** (for non-coding variants):
   - **ENCODE cis regulatory elements**: ENCODE cCREs (candidate cis-Regulatory Elements), ENCODE ChIP-seq data
@@ -1730,30 +1766,58 @@ python integrate_msi_results.py \
 
 **Best Practices**:
 
-- Use VEP with plugins for comprehensive annotation (supports both SNV/indel and SV)
+- **For initial comprehensive annotation**: Use VEP with plugins for comprehensive annotation (supports both SNV/indel and SV)
+  - Include AI-based predictors: AlphaMissense (via plugin), AlphaFold (via plugin), EVE (external), REVEL (via dbNSFP plugin)
+  - Include traditional scores: CADD, SIFT, PolyPhen-2, PhyloP
+- **For deep structural analysis of prioritized coding variants**: Use SNPeffect 5.0 for protein stability predictions (FoldX ΔΔG values)
+  - Best for variants affecting genes of interest where structural impact is critical
+  - Provides unique biophysical insights (protein stability) that VEP cannot calculate directly
+- **Recommended workflow**: 
+  1. VEP for initial comprehensive annotation and filtering
+  2. SNPeffect 5.0 for detailed structural analysis of prioritized coding variants
+  3. Combine results for comprehensive variant interpretation
 - Include COSMIC for cancer-specific variants (both SNV and SV)
-- Add pathogenicity scores (CADD, AlphaMissense) for SNV/indels
 - Annotate with OncoKB for actionability
 - **For SVs**: Use specialized SV annotation tools (AnnotSV) for comprehensive SV annotation
 - **For non-coding variants**: Annotate with regulatory information (ENCODE cCREs, TF binding motifs, chromatin states) for prioritization
   - Use VEP regulatory plugins or custom annotation with ENCODE/Roadmap data
   - Consider tissue/cell-type specific chromatin states when available
   - Integrate multiple regulatory annotation sources for comprehensive assessment
-- Use GRCh38/hg38 coordinates consistently
 - **SV-specific**: Annotate gene fusions, disrupted genes, regulatory regions
 
 **Example Commands**:
 
 ```bash
-# SNV/Indel annotation with VEP
+# SNV/Indel annotation with VEP (comprehensive annotation with AI tools)
 vep -i consensus_snv_indel.vcf.gz \
   -o consensus_snv_indel.annotated.vcf \
   --cache --dir_cache /path/to/vep_cache \
   --assembly GRCh38 --format vcf --vcf \
+  --everything \
   --plugin CADD,/path/to/CADD.tsv.gz \
+  --plugin AlphaMissense,/path/to/AlphaMissense_hg38.tsv.gz \
+  --plugin AlphaFold \
   --plugin dbNSFP,/path/to/dbNSFP.gz \
   --custom /path/to/cosmic.vcf.gz,COSMIC,vcf,exact,0 \
   --custom /path/to/oncokb.txt.gz,OncoKB,tsv,exact,0
+
+# For prioritized coding variants: Deep structural analysis with SNPeffect 5.0
+# Step 1: Extract coding variants of interest from VEP-annotated VCF
+bcftools view -i 'INFO/CSQ~"missense_variant"' consensus_snv_indel.annotated.vcf.gz \
+  > coding_variants.vcf
+
+# Step 2: Run SNPeffect 5.0 for structural analysis
+snpeffect5 --variants coding_variants.vcf \
+  --output snpeffect_results.tsv \
+  --structure_db /path/to/alphafold_db/ \
+  --threads 8 \
+  --min_plddt 70
+
+# SNPeffect output includes:
+# - FoldX ΔΔG (protein stability change)
+# - Domain annotation (Gene3D CATH domains)
+# - pLDDT confidence scores
+# - Sequence-based predictions (SIFT, PROVEAN, AGADIR, TMHMM)
 
 # Structural variant annotation with VEP
 vep -i consensus_sv.somatic.vcf.gz \
@@ -1815,7 +1879,7 @@ bedtools intersect -a non_coding_variants.vcf \
 
    - Mapping quality (MQ) > 40
    - Base quality (BQ) > 20
-   - Read depth: Minimum 10-20x per sample
+   - Read depth: Minimum 10-20x per sample (depending on sequencing strategies)
    - Strand bias: Remove extreme strand bias
    - Low complexity regions: Filter or flag
    - Homopolymer runs: Filter variants in homopolymers
@@ -1828,7 +1892,7 @@ bedtools intersect -a non_coding_variants.vcf \
 
 3. **Caller-Specific Filters**:
 
-   - DRAGEN-GATK/Mutect2: PASS filter, SQ score > 10-20 (for DRAGEN-GATK)
+   - GATK-Mutect2: PASS filter, SQ score > 10-20 (for GATK)
    - Strelka2: QSS_NT > 0 (tumor) and QSS_NT < 0 (normal)
    - DRAGEN: SQ score > 10-20
 
@@ -1866,7 +1930,7 @@ bedtools intersect -a non_coding_variants.vcf \
 **Best Practices**:
 
 - Apply filters progressively (technical → biological → clinical)
-- **Account for tumor purity** (from Stage 9): Adjust VAF filters using expected_VAF = observed_VAF / purity. Filter variants with VAF inconsistent with purity estimate (see Stage 9 for details)
+- **Account for tumor purity** (from Stage 9): Adjust VAF filters using expected_VAF = observed_VAF / purity. Filter variants with VAF inconsistent with purity estimate
 - **Do not automatically exclude synonymous variants**: Retain for codon usage analysis in prioritization stage (see Stage 13, Criterion #16)
 - Keep track of filter reasons for each variant
 - For ctDNA: Relax some filters but increase depth requirements
@@ -2378,24 +2442,18 @@ def prioritize_variant(variant):
 
 **QC Metrics**:
 
-- **Coverage**: 
-  - **WGS**: Mean genome-wide coverage, coverage uniformity
-  - **WES**: Mean coverage in target regions, coverage uniformity, on-target percentage
+- **Coverage**: Mean coverage, coverage uniformity, on-target percentage (WES only; see Stage 5 for thresholds)
 - **Sex check**: Verify biological sex matches expected sex (X/Y coverage ratio or SeqSQC)
 - **Cross-sample contamination**: Contamination estimates from DRAGEN, ContEst, VerifyBamID, and QC3
   - Germline samples: < 2% contamination acceptable
   - Somatic samples: < 5% contamination acceptable
   - Flag samples with high contamination for review
-- **Tumor purity**: Purity estimates from ABSOLUTE and TPES, agreement between methods
-  - **WGS**: Both ABSOLUTE and TPES work well
-  - **WES**: TPES works well; ABSOLUTE may have reduced accuracy due to sparse CNV data
-- **MSI status**: MSI classification from multiple tools, consensus agreement
-  - **WGS**: Excellent MSI detection with comprehensive microsatellite coverage
-  - **WES**: MSI detection limited to exonic microsatellites; may have reduced sensitivity
+- **Tumor purity**: Purity estimates from ABSOLUTE and TPES, agreement between methods (see Stage 9 and Overview table for WGS vs WES considerations)
+- **MSI status**: MSI classification from multiple tools, consensus agreement (see Stage 10 and Overview table for WGS vs WES considerations)
 - **Variant metrics**: 
   - Ti/Tv ratio (~2.0 for somatic), VAF distribution
   - SV metrics: Number of SVs by type (DEL, DUP, INV, TRA), size distribution
-- **VAF vs Purity**: Check that VAF distribution is consistent with purity estimate (see Stage 8 for VAF distribution analysis)
+- **VAF vs Purity**: Check that VAF distribution is consistent with purity estimate (see Stage 8 for VAF distribution analysis; see Stage 9 for purity estimation)
 - **TMB correlation**: If MSI-H, verify high TMB (tumor mutational burden)
 - **Caller agreement**: Percentage of variants called by multiple callers
 - **Annotation completeness**: Percentage of variants with full annotation
@@ -2459,8 +2517,8 @@ def prioritize_variant(variant):
 
 ### Tumor Purity
 
-- **Estimate tumor purity using multiple methods** (see Stage 9 for details): Use both ABSOLUTE and TPES, then use consensus estimate
-- **Integrate purity estimates throughout pipeline**: Purity estimates from Stage 9 are used in variant filtering (Stage 12) and prioritization (Stage 13)
+- **Estimate tumor purity using multiple methods** (see Stage 9): Use both ABSOLUTE and TPES, then use consensus estimate
+- **Integrate purity estimates throughout pipeline**: Purity estimates from Stage 9 are used in variant filtering (Stage 12) and prioritization (Stage 13) - see those sections for details
 - Minimum purity: 20-30% for reliable variant detection. For low purity samples: Increase sequencing depth or use specialized methods
 
 ### Serial Monitoring

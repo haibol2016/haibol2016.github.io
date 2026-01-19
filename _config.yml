@@ -14,7 +14,12 @@ lang: en-US
 # image: "/assets/images/og-image.png"
 
 # Analytics (uncomment and add your tracking ID)
-# google_analytics: "G-XXXXXXXXXX"  # Google Analytics 4 tracking ID
+# To get your Google Analytics tracking ID:
+# 1. Go to https://analytics.google.com/
+# 2. Create a property for your website (or use existing)
+# 3. Get your Measurement ID (format: G-XXXXXXXXXX)
+# 4. Uncomment the line below and replace G-XXXXXXXXXX with your actual ID
+google_analytics: "G-L930PHHN0E"  # Google Analytics 4 tracking ID
 # google_tag_manager: "GTM-XXXXXXX"  # Google Tag Manager ID (alternative)
 
 # Social media links (update with your accounts)
